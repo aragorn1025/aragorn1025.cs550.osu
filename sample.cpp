@@ -67,10 +67,6 @@ const int ESCAPE = 0x1b;
 
 const int INIT_WINDOW_SIZE = 1000;
 
-// size of the 3d box to be drawn:
-
-const float BOXSIZE = 2.f;
-
 // multiplication factors for input interaction:
 //  (these are known from previous experience)
 
@@ -789,69 +785,67 @@ InitLists( )
 	if (DebugOn != 0)
 		fprintf(stderr, "Starting InitLists.\n");
 
-	float dx = BOXSIZE / 2.f;
-	float dy = BOXSIZE / 2.f;
-	float dz = BOXSIZE / 2.f;
 	glutSetWindow( MainWindow );
-
-	// create the object:
 
 	BoxList = glGenLists( 1 );
 	glNewList( BoxList, GL_COMPILE );
 
-		glBegin( GL_QUADS );
+		// create the 3d football object:
 
-			glColor3f( 1., 0., 0. );
+		// parameters of the 3d football to be drawn:
+		const float RX = 1.0f;	// radius in x direction
+		const float RY = 0.5f;	// radius in y direction
+		const float RZ = 0.5f;	// radius in z direction
+		const int STACKS = 15;	// number of stacks for the 3d football
+		const int SLICES = 15;	// number of slices for the 3d football
 
-				glNormal3f( 1., 0., 0. );
-					glVertex3f(  dx, -dy,  dz );
-					glVertex3f(  dx, -dy, -dz );
-					glVertex3f(  dx,  dy, -dz );
-					glVertex3f(  dx,  dy,  dz );
+		// temporary storage for the hsv to rgb conversion:
+		float hsv[3], rgb[3];
+		hsv[2] = 1.f;  // HSV value. Just make it constant for simplicity.
 
-				glNormal3f(-1., 0., 0.);
-					glVertex3f( -dx, -dy,  dz);
-					glVertex3f( -dx,  dy,  dz );
-					glVertex3f( -dx,  dy, -dz );
-					glVertex3f( -dx, -dy, -dz );
+		for (int i = 0; i < STACKS; i++) {
+			// get the angles for the current stack and the next stack, so we can draw a quad strip:
+			float theta1 = F_PI_2 - (float)i * F_PI / (float)STACKS;
+			float theta2 = F_PI_2 - (float)(i + 1) * F_PI / (float)STACKS;
 
-			glColor3f( 0., 1., 0. );
+			// precompute the sine and cosine of these angles that will be used in the inner loop for efficiency:
+			float cosTheta1 = cosf(theta1);
+			float sinTheta1 = sinf(theta1);
+			float cosTheta2 = cosf(theta2);
+			float sinTheta2 = sinf(theta2);
 
-				glNormal3f(0., 1., 0.);
-					glVertex3f( -dx,  dy,  dz );
-					glVertex3f(  dx,  dy,  dz );
-					glVertex3f(  dx,  dy, -dz );
-					glVertex3f( -dx,  dy, -dz );
+			hsv[1] = 0.1f + abs(cosTheta1) * 0.9f;  // HSV saturation, based on the current stack angle but make it at least 0.1 to avoid pure white at the poles
 
-				glNormal3f(0., -1., 0.);
-					glVertex3f( -dx, -dy,  dz);
-					glVertex3f( -dx, -dy, -dz );
-					glVertex3f(  dx, -dy, -dz );
-					glVertex3f(  dx, -dy,  dz );
+			glBegin(GL_QUAD_STRIP);
+			for (int j = 0; j <= SLICES; j++) {
+				// get the angle for this slice:
+				float phi = (float)j * F_2_PI / (float)SLICES;
+				
+				// precompute the sine and cosine of this angle for efficiency:
+				float cosPhi = cosf(phi);
+				float sinPhi = sinf(phi);
+				
+				// get the coordinates of the vertex in the current stack:
+				float x1 = RX * cosTheta1 * cosPhi;
+				float y1 = RY * sinTheta1;
+				float z1 = RZ * cosTheta1 * sinPhi;
+				
+				// get the coordinates of the vertex in the next stack:
+				float x2 = RX * cosTheta2 * cosPhi;
+				float y2 = RY * sinTheta2;
+				float z2 = RZ * cosTheta2 * sinPhi;
+				
+				// set the color of the quad strip based on the position of the vertex:
+				hsv[0] = (float)j / (float)SLICES * 360.f;	// HSV hue, based on the current slice angle
+				HsvRgb(hsv, rgb);
+				glColor3f(rgb[0], rgb[1], rgb[2]);
 
-			glColor3f(0., 0., 1.);
-
-				glNormal3f(0., 0., 1.);
-					glVertex3f(-dx, -dy, dz);
-					glVertex3f( dx, -dy, dz);
-					glVertex3f( dx,  dy, dz);
-					glVertex3f(-dx,  dy, dz);
-
-				glNormal3f(0., 0., -1.);
-					glVertex3f(-dx, -dy, -dz);
-					glVertex3f(-dx,  dy, -dz);
-					glVertex3f( dx,  dy, -dz);
-					glVertex3f( dx, -dy, -dz);
-
-		glEnd( );
-#ifdef NOTDEF
-		glColor3f(1., 1., 1.);
-		glBegin(GL_TRIANGLES);
-		glVertex3f(-dx, -dy, dz);
-		glVertex3f(0., -dy, dz + 0.5f);
-		glVertex3f(dx, -dy, dz);
-		glEnd();
-#endif
+				// set the vertex for the current slice, and this vertex is also used for the next slice:
+				glVertex3f(x1, y1, z1);
+				glVertex3f(x2 , y2 , z2 );
+			}
+			glEnd();
+		}
 
 	glEndList( );
 

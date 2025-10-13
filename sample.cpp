@@ -176,6 +176,9 @@ const int MS_PER_CYCLE = 10000;		// 10000 milliseconds = 10 seconds
 //#define DEMO_Z_FIGHTING
 //#define DEMO_DEPTH_BUFFER
 
+// the parameters for the circle path of the horse:
+const float CIRCLE_RADIUS = 2.0f;
+const int   CIRCLE_SLICES = 60;
 
 // non-constant global variables:
 
@@ -796,8 +799,6 @@ InitLists( )
 	// draw a red circle in the XZ-plane to show the rotation of the object:
 	glColor3f(1.0f, 0.0f, 0.0f);
 	glBegin(GL_LINE_LOOP);
-	const float CIRCLE_RADIUS = 2.0f;
-	const int CIRCLE_SLICES = 60;
 	for (int i = 0; i < CIRCLE_SLICES; i ++) {
 		// get the angle for this slice:
 		float theta = (float)i * F_2_PI / (float)CIRCLE_SLICES;

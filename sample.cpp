@@ -179,6 +179,9 @@ const int MS_PER_CYCLE = 10000;		// 10000 milliseconds = 10 seconds
 // the parameters for the circle path of the horse:
 const float CIRCLE_RADIUS = 2.0f;
 const int   CIRCLE_SLICES = 60;
+const int   HORSE_BOUNCE_COUNT = 6;
+const float HORSE_BOUNCE_HEIGHT = 0.5f;
+const float HORSE_BOUNCE_ANGLE = 15.f;
 
 // non-constant global variables:
 
@@ -483,6 +486,15 @@ Display( )
 	// draw the box object by calling up its display list:
 
 	glCallList( BoxList );
+
+	float dx = CIRCLE_RADIUS * sinf( Time * F_2_PI );
+	float dy = HORSE_BOUNCE_HEIGHT * sinf( HORSE_BOUNCE_COUNT * Time * F_2_PI );
+	float dz = CIRCLE_RADIUS * cosf( Time * F_2_PI );
+	glTranslatef( dx, dy, dz );
+
+	glRotatef( Time * 360.f, 0.f, 1.f, 0.f );
+	glRotatef( HORSE_BOUNCE_ANGLE * sinf(HORSE_BOUNCE_COUNT * Time * F_2_PI), 0.f, 0.f, 1.f );
+
 	glCallList( HorseList );
 
 #ifdef DEMO_Z_FIGHTING

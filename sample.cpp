@@ -440,6 +440,11 @@ Display( )
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity( );
 
+	// set the translation of the hosre:
+	float horse_dx = CIRCLE_RADIUS * sinf( Time * F_2_PI );
+	float horse_dy = HORSE_BOUNCE_HEIGHT * sinf( HORSE_BOUNCE_COUNT * Time * F_2_PI );
+	float horse_dz = CIRCLE_RADIUS * cosf( Time * F_2_PI );
+
 	// set the eye position, look-at position, and up-vector:
 
 	gluLookAt( 3.f, 3.f, 3.f,     0.f, 0.f, 0.f,     0.f, 1.f, 0.f );
@@ -488,14 +493,10 @@ Display( )
 
 	glCallList( BoxList );
 
-	float dx = CIRCLE_RADIUS * sinf( Time * F_2_PI );
-	float dy = HORSE_BOUNCE_HEIGHT * sinf( HORSE_BOUNCE_COUNT * Time * F_2_PI );
-	float dz = CIRCLE_RADIUS * cosf( Time * F_2_PI );
-	glTranslatef( dx, dy, dz );
-
+	// draw the horse by calling up its display list:
+	glTranslatef( horse_dx, horse_dy, horse_dz );
 	glRotatef( Time * 360.f, 0.f, 1.f, 0.f );
 	glRotatef( HORSE_BOUNCE_ANGLE * sinf(HORSE_BOUNCE_COUNT * Time * F_2_PI), 0.f, 0.f, 1.f );
-
 	glCallList( HorseList );
 
 #ifdef DEMO_Z_FIGHTING

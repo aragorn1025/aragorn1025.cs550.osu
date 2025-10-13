@@ -790,7 +790,24 @@ InitLists( )
 	BoxList = glGenLists( 1 );
 	glNewList( BoxList, GL_COMPILE );
 
-	// TODO: do something here
+	// draw a red circle in the XZ-plane to show the rotation of the object:
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glBegin(GL_LINE_LOOP);
+	const float CIRCLE_RADIUS = 2.0f;
+	const int CIRCLE_SLICES = 60;
+	for (int i = 0; i < CIRCLE_SLICES; i ++) {
+		// get the angle for this slice:
+		float theta = (float)i * F_2_PI / (float)CIRCLE_SLICES;
+
+		// get the x, y, z coordinates:
+		float x = CIRCLE_RADIUS * cosf(theta);
+		float y = 0.0f;
+		float z = CIRCLE_RADIUS * sinf(theta);
+
+		// draw the vertex:
+		glVertex3f(x, y, z);
+	}
+	glEnd();
 
 	glEndList( );
 

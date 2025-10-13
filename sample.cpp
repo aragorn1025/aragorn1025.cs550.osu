@@ -202,6 +202,7 @@ int		ShadowsOn;				// != 0 means to turn shadows on
 float	Time;					// used for animation, this has a value between 0. and 1.
 int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
+bool	IsFreeze;				// animation freeze flag
 
 #include "objects/CarouselHorse0.10.550"
 
@@ -949,6 +950,15 @@ Keyboard( unsigned char c, int x, int y )
 
 	switch( c )
 	{
+		case 'f':
+		case 'F':
+			IsFreeze = !IsFreeze;
+			if ( IsFreeze ) 
+				glutIdleFunc( NULL );
+			else
+				glutIdleFunc( Animate );
+			break;
+
 		case 'o':
 		case 'O':
 			NowProjection = ORTHO;
@@ -1088,6 +1098,7 @@ Reset( )
 	NowColor = YELLOW;
 	NowProjection = PERSP;
 	Xrot = Yrot = 0.;
+	IsFreeze = false;
 }
 
 

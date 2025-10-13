@@ -51,7 +51,7 @@
 
 // title of these windows:
 
-const char *WINDOWTITLE = "OpenGL / GLUT Sample -- Joe Graphics";
+const char *WINDOWTITLE = "OpenGL / GLUT Project #2 -- Tz-Jie Dai";
 const char *GLUITITLE   = "User Interface Window";
 
 // what the glui package defines as true and false:

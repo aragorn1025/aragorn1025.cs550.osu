@@ -203,6 +203,7 @@ float	Time;					// used for animation, this has a value between 0. and 1.
 int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
 bool	IsFreeze;				// animation freeze flag
+bool	IsOutsideView;			// view mode flag
 
 #include "objects/CarouselHorse0.10.550"
 
@@ -446,8 +447,10 @@ Display( )
 	float horse_dz = CIRCLE_RADIUS * cosf( Time * F_2_PI );
 
 	// set the eye position, look-at position, and up-vector:
-
-	gluLookAt( 3.f, 3.f, 3.f,     0.f, 0.f, 0.f,     0.f, 1.f, 0.f );
+	if ( IsOutsideView )
+		gluLookAt( 3.f, 3.f, 3.f,     0.f, 0.f, 0.f,     0.f, 1.f, 0.f );
+	else
+		gluLookAt( 0.f, 0.f, 0.f,     horse_dx, 0.f, horse_dz,     0.f, 1.f, 0.f );
 
 	// rotate the scene:
 
@@ -960,6 +963,11 @@ Keyboard( unsigned char c, int x, int y )
 				glutIdleFunc( Animate );
 			break;
 
+		case 'v':
+		case 'V':
+			IsOutsideView = !IsOutsideView;
+			break;
+
 		case 'o':
 		case 'O':
 			NowProjection = ORTHO;
@@ -1100,6 +1108,7 @@ Reset( )
 	NowProjection = PERSP;
 	Xrot = Yrot = 0.;
 	IsFreeze = false;
+	IsOutsideView = true;
 }
 
 

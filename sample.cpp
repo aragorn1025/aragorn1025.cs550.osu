@@ -170,6 +170,19 @@ const float	WHITE[ ] = { 1.,1.,1.,1. };
 const int MS_PER_CYCLE = 10000;		// 10000 milliseconds = 10 seconds
 
 
+// wall parameters:
+const float	WALL_N	= (float) 1000;					// how many points to draw a wall side
+const float	WALL_X0	= -0.5f;						// where one side starts
+const float	WALL_XN	= 24.f;							// where one side ends
+const float	WALL_DX	= (WALL_XN - WALL_X0) / WALL_N;	// change in x between the points
+const float	WALL_Y0	= -0.5f;						// where one side starts
+const float	WALL_YN	= 24.f;							// where one side starts
+const float	WALL_DY	= (WALL_YN - WALL_Y0) / WALL_N;	// change in y between the points
+const float	WALL_Z0	= -0.5f;						// where one side starts
+const float	WALL_ZN	= 24.f;							// where one side starts
+const float	WALL_DZ	= (WALL_ZN - WALL_Z0) / WALL_N;	// change in z between the points
+
+
 // what options should we compile-in?
 // in general, you don't need to worry about these
 // i compile these in to show class examples of things going wrong
@@ -182,7 +195,7 @@ const int MS_PER_CYCLE = 10000;		// 10000 milliseconds = 10 seconds
 int		ActiveButton;			// current button that is down
 GLuint	AxesList;				// list to hold the axes
 int		AxesOn;					// != 0 means to draw the axes
-GLuint	BoxList;				// object display list
+GLuint	WallList;				// object display list
 int		DebugOn;				// != 0 means to print debugging info
 int		DepthCueOn;				// != 0 means to use intensity depth cueing
 int		DepthBufferOn;			// != 0 means to use the z-buffer
@@ -300,7 +313,7 @@ TimeOfDaySeed( )
 
 // these are here for when you need them -- just uncomment the ones you need:
 
-//#include "setmaterial.cpp"
+#include "setmaterial.cpp"
 //#include "setlight.cpp"
 //#include "osusphere.cpp"
 //#include "osucube.cpp"
@@ -475,9 +488,8 @@ Display( )
 	glEnable( GL_NORMALIZE );
 
 
-	// draw the box object by calling up its display list:
-
-	glCallList( BoxList );
+	// draw the wall object by calling up its display list:
+	glCallList(WallList);
 
 #ifdef DEMO_Z_FIGHTING
 	if( DepthFightingOn != 0 )
@@ -787,12 +799,44 @@ InitLists( )
 
 	glutSetWindow( MainWindow );
 
-	BoxList = glGenLists( 1 );
-	glNewList( BoxList, GL_COMPILE );
+	WallList = glGenLists(1);
+	glNewList(WallList, GL_COMPILE);
+		// floor on X-Z plane
+		SetMaterial(0.8f, 0.6f, 0.6f, 30.f);
+		glNormal3f(0., 1., 0.);
+		for(float zi = WALL_Z0, zj = WALL_Z0 + WALL_DZ; zi <= WALL_ZN; zi += WALL_DZ, zj += WALL_DZ) {
+			glBegin(GL_QUAD_STRIP);
+			for(float xi = WALL_X0; xi < WALL_XN; xi += WALL_DX) {
+				glVertex3f(xi, WALL_Y0, zi);
+				glVertex3f(xi, WALL_Y0, zj);
+			}
+			glEnd();
+		}
 
-	// TODO: do something here
+		// wall on Y-Z plane
+		SetMaterial(0.6f, 0.8f, 0.6f, 30.f);
+		glNormal3f(1., 0., 0.);
+		for(float zi = WALL_Z0, zj = WALL_Z0 + WALL_DZ; zi <= WALL_ZN; zi += WALL_DZ, zj += WALL_DZ) {
+			glBegin(GL_QUAD_STRIP);
+			for(float yi = WALL_Y0; yi < WALL_YN; yi += WALL_DY) {
+				glVertex3f(WALL_X0, yi, zi);
+				glVertex3f(WALL_X0, yi, zj);
+			}
+			glEnd();
+		}
 
-	glEndList( );
+		// wall on X-Y plane
+		SetMaterial(0.6f, 0.6f, 0.8f, 30.f);
+		glNormal3f(0., 0., 1.);
+		for(float yi = WALL_Y0, yj = WALL_Y0 + WALL_DY; yi <= WALL_YN; yi += WALL_DY, yj += WALL_DY) {
+			glBegin(GL_QUAD_STRIP);
+			for(float xi = WALL_X0; xi < WALL_XN; xi += WALL_DX) {
+				glVertex3f(xi, yi, WALL_Z0);
+				glVertex3f(xi, yj, WALL_Z0);
+			}
+			glEnd();
+		}
+	glEndList();
 
 
 	// create the axes:

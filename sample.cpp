@@ -196,6 +196,9 @@ int		ActiveButton;			// current button that is down
 GLuint	AxesList;				// list to hold the axes
 int		AxesOn;					// != 0 means to draw the axes
 GLuint	WallList;				// object display list
+GLuint  CatList;
+GLuint  CowList;
+GLuint  DogList;
 int		DebugOn;				// != 0 means to print debugging info
 int		DepthCueOn;				// != 0 means to use intensity depth cueing
 int		DepthBufferOn;			// != 0 means to use the z-buffer
@@ -319,8 +322,8 @@ TimeOfDaySeed( )
 //#include "osucube.cpp"
 //#include "osucylindercone.cpp"
 //#include "osutorus.cpp"
-//#include "bmptotexture.cpp"
-//#include "loadobjmtlfiles.cpp"
+#include "bmptotexture.cpp"
+#include "loadobjmtlfiles.cpp"
 //#include "keytime.cpp"
 //#include "glslprogram.cpp"
 //#include "vertexbufferobject.cpp"
@@ -490,6 +493,42 @@ Display( )
 
 	// draw the wall object by calling up its display list:
 	glCallList(WallList);
+
+	// draw the cat object by calling up its display list:
+	glPushMatrix();
+		SetMaterial(1.f, 0.f, 0.f, 30.f);
+		glTranslatef(2.f * 2.f, 0.f, 2.f * 3.f);
+		glTranslatef(10.444f, 0.f, 4.447f * 1.5f + 3.403f);
+		glTranslatef(1.251f, 0.f, 0.f);
+		glRotatef(270.f, 0.f, 1.f, 0.f);
+		glTranslatef(2.226f, 0.002f, 0.626f);
+		glScalef(1.f, 1.f, 1.f);
+		glCallList(CatList);
+	glPopMatrix();
+
+	// draw the cow object by calling up its display list:
+	glPushMatrix();
+		SetMaterial(0.f, 1.f, 0.f, 30.f);
+		glTranslatef(2.f, 0.f, 2.f * 2.f);
+		glTranslatef(0.f, 0.f, 4.447f * 1.5f);
+		glTranslatef(0.f, 0.f, 0.f);
+		glRotatef(0.f, 0.f, 1.f, 0.f);
+		glTranslatef(4.446f, 3.637f, 1.701f);
+		glScalef(1.f, 1.f, 1.f);
+		glCallList(CowList);
+	glPopMatrix();
+
+	// draw the dog object by calling up its display list:
+	glPushMatrix();
+		SetMaterial(0.f, 0.f, 1.f, 30.f);
+		glTranslatef(2.f * 2.f, 0.f, 2.f);
+		glTranslatef(10.444f, 0.f, 0.f);
+		glTranslatef(0.f, 0.f, 0.f);
+		glRotatef(0.f, 0.f, 1.f, 0.f);
+		glTranslatef(0.639f * 1.5f, -0.003f * 1.5f, 2.356f * 1.5f);
+		glScalef(1.5f, 1.5f, 1.5f);
+		glCallList(DogList);
+	glPopMatrix();
 
 #ifdef DEMO_Z_FIGHTING
 	if( DepthFightingOn != 0 )
@@ -838,6 +877,10 @@ InitLists( )
 		}
 	glEndList();
 
+	// load the objects:
+	CatList = LoadObjMtlFiles((char *) "objects/cat.obj");
+	CowList = LoadObjMtlFiles((char *) "objects/cow.obj");
+	DogList = LoadObjMtlFiles((char *) "objects/dog.obj");
 
 	// create the axes:
 

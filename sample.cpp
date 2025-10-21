@@ -188,6 +188,13 @@ const float COMMON_CENTER_X		= (WALL_X0 + WALL_XN) / 2.f + 5.f;
 const float COMMON_CENTER_Y		= 0.f;
 const float COMMON_CENTER_Z		= (WALL_Z0 + WALL_ZN) / 2.f;
 const float COMMON_GAP			= 5.f;
+const float SUN_RADIUS			= 0.5f;
+const int   SUN_SLICES			= 30;
+const int   SUN_STACKS			= 30;
+const float SUN_OBBIT_CENTER_X	= (WALL_X0 + WALL_XN) / 2.f;
+const float SUN_OBBIT_CENTER_Y	= (WALL_Y0 * 7.f + WALL_YN * 1.f) / 8.f;
+const float SUN_OBBIT_CENTER_Z	= (WALL_Z0 + WALL_ZN) / 2.f;
+const float SUN_ORBIT_RADIUS	= 15.f;
 const float CAT_SCALE			= 1.f;
 const float CAT_L				= 6.087f * CAT_SCALE;
 const float CAT_W				= 1.251f * CAT_SCALE;
@@ -211,6 +218,13 @@ const float DOG_W				= 1.184f * DOG_SCALE;
 int		ActiveButton;			// current button that is down
 GLuint	AxesList;				// list to hold the axes
 int		AxesOn;					// != 0 means to draw the axes
+GLuint	SunList;
+float	SunColorR;
+float	SunColorG;
+float	SunColorB;
+float	SunPositionX;
+float	SunPositionY;
+float	SunPositionZ;
 GLuint	WallList;				// object display list
 GLuint  CatList;
 GLuint  CowList;
@@ -333,8 +347,8 @@ TimeOfDaySeed( )
 // these are here for when you need them -- just uncomment the ones you need:
 
 #include "setmaterial.cpp"
-//#include "setlight.cpp"
-//#include "osusphere.cpp"
+#include "setlight.cpp"
+#include "osusphere.cpp"
 //#include "osucube.cpp"
 //#include "osucylindercone.cpp"
 //#include "osutorus.cpp"
@@ -403,6 +417,9 @@ Animate( )
 	Time = (float)ms / (float)MS_PER_CYCLE;		// makes the value of Time between 0. and slightly less than 1.
 
 	// for example, if you wanted to spin an object in Display( ), you might call: glRotatef( 360.f*Time,   0., 1., 0. );
+	SunPositionX = SUN_OBBIT_CENTER_X + SUN_ORBIT_RADIUS * sinf( Time * F_2_PI );
+	SunPositionY = SUN_OBBIT_CENTER_Y;
+	SunPositionZ = SUN_OBBIT_CENTER_Z + SUN_ORBIT_RADIUS * cosf( Time * F_2_PI );
 
 	// force a call to Display( ) next time it is convenient:
 
@@ -505,6 +522,14 @@ Display( )
 	// since we are using glScalef( ), be sure the normals get unitized:
 
 	glEnable( GL_NORMALIZE );
+
+	// set the light position:
+	SetPointLight(GL_LIGHT0, SunPositionX, SunPositionY, SunPositionZ, SunColorR, SunColorG, SunColorB);
+	glPushMatrix();
+		glTranslatef(SunPositionX, SunPositionY, SunPositionZ);
+		glColor3f(SunColorR, SunColorG, SunColorB);
+		glCallList(SunList);
+	glPopMatrix();
 
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
@@ -855,6 +880,12 @@ InitLists( )
 
 	glutSetWindow( MainWindow );
 
+	// sun
+	SunList = glGenLists(1);
+	glNewList(SunList, GL_COMPILE);
+		OsuSphere(SUN_RADIUS, SUN_SLICES, SUN_STACKS);
+	glEndList();
+
 	WallList = glGenLists(1);
 	glNewList(WallList, GL_COMPILE);
 		// floor on X-Z plane
@@ -1115,6 +1146,9 @@ Reset( )
 {
 	ActiveButton = 0;
 	AxesOn = 1;
+	SunColorR = 1.f;
+	SunColorG = 1.f;
+	SunColorB = 1.f;
 	DebugOn = 0;
 	DepthBufferOn = 1;
 	DepthFightingOn = 0;

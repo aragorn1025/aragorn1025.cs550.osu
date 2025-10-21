@@ -248,6 +248,7 @@ int		ShadowsOn;				// != 0 means to turn shadows on
 float	Time;					// used for animation, this has a value between 0. and 1.
 int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
+bool	IsFreeze;				// animation freeze flag
 
 
 // function prototypes:
@@ -1034,6 +1035,15 @@ Keyboard( unsigned char c, int x, int y )
 
 	switch( c )
 	{
+		case 'f':
+		case 'F':
+			IsFreeze = !IsFreeze;
+			if ( IsFreeze ) 
+				glutIdleFunc( NULL );
+			else
+				glutIdleFunc( Animate );
+			break;
+
 		case 'p':
 		case 'P':
 			NowLightSourceType = POINT_LIGHT;
@@ -1177,6 +1187,7 @@ Reset( )
 	NowProjection = PERSP;
 	NowLightSourceType = POINT_LIGHT;
 	Xrot = Yrot = 0.;
+	IsFreeze = false;
 }
 
 

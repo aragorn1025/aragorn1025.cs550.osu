@@ -490,6 +490,8 @@ Display( )
 
 	glEnable( GL_NORMALIZE );
 
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
 
 	// draw the wall object by calling up its display list:
 	glCallList(WallList);
@@ -529,6 +531,8 @@ Display( )
 		glScalef(1.5f, 1.5f, 1.5f);
 		glCallList(DogList);
 	glPopMatrix();
+
+	glDisable(GL_LIGHTING);
 
 #ifdef DEMO_Z_FIGHTING
 	if( DepthFightingOn != 0 )

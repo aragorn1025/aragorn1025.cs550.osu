@@ -535,7 +535,10 @@ Display( )
 	glEnable(GL_LIGHT0);
 
 	// draw the wall object by calling up its display list:
-	glCallList(WallList);
+	glPushMatrix();
+		glShadeModel(GL_SMOOTH);
+		glCallList(WallList);
+	glPopMatrix();
 
 	// draw the cat object by calling up its display list:
 	glPushMatrix();
@@ -545,6 +548,7 @@ Display( )
 		glRotatef(270.f, 0.f, 1.f, 0.f);
 		glScalef(1.f, 1.f, 1.f);
 		glTranslatef(-0.815f, 0.002f, 0.f);
+		glShadeModel(GL_SMOOTH);
 		glCallList(CatList);
 	glPopMatrix();
 
@@ -556,6 +560,7 @@ Display( )
 		glRotatef(0.f, 0.f, 1.f, 0.f);
 		glScalef(1.f, 1.f, 1.f);
 		glTranslatef(-0.776f, 3.637f, 0.f);
+		glShadeModel(GL_SMOOTH);
 		glCallList(CowList);
 	glPopMatrix();
 
@@ -567,6 +572,7 @@ Display( )
 		glRotatef(0.f, 0.f, 1.f, 0.f);
 		glScalef(1.5f, 1.5f, 1.5f);
 		glTranslatef(0.047f, -0.003f, 0.133f);
+		glShadeModel(GL_SMOOTH);
 		glCallList(DogList);
 	glPopMatrix();
 

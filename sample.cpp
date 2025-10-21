@@ -108,6 +108,12 @@ enum ButtonVals
 	QUIT
 };
 
+// which light source types:
+enum LightSourceType {
+	POINT_LIGHT,
+	SPOT_LIGHT
+};
+
 // window background color (rgba):
 
 const GLfloat BACKCOLOR[ ] = { 0., 0., 0., 1. };
@@ -236,6 +242,7 @@ int		DepthFightingOn;		// != 0 means to force the creation of z-fighting
 int		MainWindow;				// window id for main graphics window
 int		NowColor;				// index into Colors[ ]
 int		NowProjection;		// ORTHO or PERSP
+int 	NowLightSourceType;		// POINT_LIGHT or SPOT_LIGHT
 float	Scale;					// scaling factor
 int		ShadowsOn;				// != 0 means to turn shadows on
 float	Time;					// used for animation, this has a value between 0. and 1.
@@ -524,7 +531,12 @@ Display( )
 	glEnable( GL_NORMALIZE );
 
 	// set the light position:
-	SetPointLight(GL_LIGHT0, SunPositionX, SunPositionY, SunPositionZ, SunColorR, SunColorG, SunColorB);
+	if (NowLightSourceType == POINT_LIGHT) {
+		SetPointLight(GL_LIGHT0, SunPositionX, SunPositionY, SunPositionZ, SunColorR, SunColorG, SunColorB);
+	} else {
+		SetSpotLight(GL_LIGHT0, SunPositionX, SunPositionY, SunPositionZ, -1.f, 0.f, 0.f, SunColorR, SunColorG, SunColorB);
+	}
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.3f, (float *) WHITE));
 	glPushMatrix();
 		glTranslatef(SunPositionX, SunPositionY, SunPositionZ);
 		glColor3f(SunColorR, SunColorG, SunColorB);
@@ -1022,14 +1034,14 @@ Keyboard( unsigned char c, int x, int y )
 
 	switch( c )
 	{
-		case 'o':
-		case 'O':
-			NowProjection = ORTHO;
-			break;
-
 		case 'p':
 		case 'P':
-			NowProjection = PERSP;
+			NowLightSourceType = POINT_LIGHT;
+			break;
+
+		case 's':
+		case 'S':
+			NowLightSourceType = SPOT_LIGHT;
 			break;
 
 		case 'q':
@@ -1163,6 +1175,7 @@ Reset( )
 	ShadowsOn = 0;
 	NowColor = YELLOW;
 	NowProjection = PERSP;
+	NowLightSourceType = POINT_LIGHT;
 	Xrot = Yrot = 0.;
 }
 

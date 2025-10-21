@@ -532,6 +532,9 @@ Display( )
 	glEnable( GL_NORMALIZE );
 
 	// set the light position:
+	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0f);
+	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.0f);
+	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.0f);
 	if (NowLightSourceType == POINT_LIGHT) {
 		SetPointLight(GL_LIGHT0, SunPositionX, SunPositionY, SunPositionZ, SunColorR, SunColorG, SunColorB);
 	} else {

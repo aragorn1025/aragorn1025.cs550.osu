@@ -555,7 +555,7 @@ Display( )
 
 	// draw the cat object by calling up its display list:
 	glPushMatrix();
-		SetMaterial(1.f, 0.f, 0.f, 30.f);
+		SetMaterial(0.8f, 0.2f, 0.2f, 30.f);
 		glTranslatef(0.f, 0.f, (COMMON_GAP + CAT_L) / 2.f);
 		glTranslatef(COMMON_CENTER_X, 0.f, COMMON_CENTER_Z);
 		glRotatef(270.f, 0.f, 1.f, 0.f);
@@ -567,7 +567,7 @@ Display( )
 
 	// draw the cow object by calling up its display list:
 	glPushMatrix();
-		SetMaterial(0.f, 1.f, 0.f, 30.f);
+		SetMaterial(0.2f, 0.8f, 0.2f, 30.f);
 		glTranslatef(-(COMMON_GAP + COW_L) / 2.f, 0.f, 0.f);
 		glTranslatef(COMMON_CENTER_X, 0.f, COMMON_CENTER_Z);
 		glRotatef(0.f, 0.f, 1.f, 0.f);
@@ -579,7 +579,7 @@ Display( )
 
 	// draw the dog object by calling up its display list:
 	glPushMatrix();
-		SetMaterial(0.f, 0.f, 1.f, 30.f);
+		SetMaterial(0.2f, 0.2f, 0.8f, 30.f);
 		glTranslatef(0.f, 0.f, -(COMMON_GAP + DOG_L) / 2.f);
 		glTranslatef(COMMON_CENTER_X, 0.f, COMMON_CENTER_Z);
 		glRotatef(0.f, 0.f, 1.f, 0.f);

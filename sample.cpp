@@ -1054,6 +1054,62 @@ Keyboard( unsigned char c, int x, int y )
 			NowLightSourceType = SPOT_LIGHT;
 			break;
 
+		case 'w':
+		case 'W':
+			SunColorR = 1.f;
+			SunColorG = 1.f;
+			SunColorB = 1.f;
+			break;
+
+		case 'r':
+		case 'R':
+			SunColorR = 1.f;
+			SunColorG = 0.f;
+			SunColorB = 0.f;
+			break;
+
+		case 'g':
+		case 'G':
+			SunColorR = 0.f;
+			SunColorG = 1.f;
+			SunColorB = 0.f;
+			break;
+
+		case 'b':
+		case 'B':
+			SunColorR = 0.f;
+			SunColorG = 0.f;
+			SunColorB = 1.f;
+			break;
+
+		case 'y':
+		case 'Y':
+			SunColorR = 1.f;
+			SunColorG = 1.f;
+			SunColorB = 0.f;
+			break;
+
+		case 'm':
+		case 'M':
+			SunColorR = 1.f;
+			SunColorG = 0.f;
+			SunColorB = 1.f;
+			break;
+
+		case 'c':
+		case 'C':
+			SunColorR = 0.f;
+			SunColorG = 1.f;
+			SunColorB = 1.f;
+			break;
+
+		case 'o':
+		case 'O':
+			SunColorR = 1.f;
+			SunColorG = 0.5f;
+			SunColorB = 0.f;
+			break;
+
 		case 'q':
 		case 'Q':
 		case ESCAPE:

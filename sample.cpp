@@ -172,15 +172,31 @@ const int MS_PER_CYCLE = 10000;		// 10000 milliseconds = 10 seconds
 
 // wall parameters:
 const float	WALL_N	= (float) 1000;					// how many points to draw a wall side
-const float	WALL_X0	= -0.5f;						// where one side starts
-const float	WALL_XN	= 24.f;							// where one side ends
+const float	WALL_X0	= -0.2f;						// where one side starts
+const float	WALL_XN	= 33.f;							// where one side ends
 const float	WALL_DX	= (WALL_XN - WALL_X0) / WALL_N;	// change in x between the points
-const float	WALL_Y0	= -0.5f;						// where one side starts
-const float	WALL_YN	= 24.f;							// where one side starts
+const float	WALL_Y0	= -0.2f;						// where one side starts
+const float	WALL_YN	= 33.f;							// where one side starts
 const float	WALL_DY	= (WALL_YN - WALL_Y0) / WALL_N;	// change in y between the points
-const float	WALL_Z0	= -0.5f;						// where one side starts
-const float	WALL_ZN	= 24.f;							// where one side starts
+const float	WALL_Z0	= -0.2f;						// where one side starts
+const float	WALL_ZN	= 33.f;							// where one side starts
 const float	WALL_DZ	= (WALL_ZN - WALL_Z0) / WALL_N;	// change in z between the points
+
+// object papameters:
+const float AXES_LENGTH			= 35.f;
+const float COMMON_CENTER_X		= (WALL_X0 + WALL_XN) / 2.f + 5.f;
+const float COMMON_CENTER_Y		= 0.f;
+const float COMMON_CENTER_Z		= (WALL_Z0 + WALL_ZN) / 2.f;
+const float COMMON_GAP			= 5.f;
+const float CAT_SCALE			= 1.f;
+const float CAT_L				= 6.087f * CAT_SCALE;
+const float CAT_W				= 1.251f * CAT_SCALE;
+const float COW_SCALE			= 1.f;
+const float COW_L				= 10.444f * COW_SCALE;
+const float COW_W				= 3.403f * COW_SCALE;
+const float DOG_SCALE			= 1.5f;
+const float DOG_L				= 4.447f * DOG_SCALE;
+const float DOG_W				= 1.184f * DOG_SCALE;
 
 
 // what options should we compile-in?
@@ -449,7 +465,7 @@ Display( )
 
 	// set the eye position, look-at position, and up-vector:
 
-	gluLookAt( 36.f, 24.f, 36.f,     0.f, 0.f, 0.f,     0.f, 1.f, 0.f );
+	gluLookAt( 48.f, 32.f, 48.f,     0.f, 0.f, 0.f,     0.f, 1.f, 0.f );
 
 	// rotate the scene:
 
@@ -499,36 +515,33 @@ Display( )
 	// draw the cat object by calling up its display list:
 	glPushMatrix();
 		SetMaterial(1.f, 0.f, 0.f, 30.f);
-		glTranslatef(2.f * 2.f, 0.f, 2.f * 3.f);
-		glTranslatef(10.444f, 0.f, 4.447f * 1.5f + 3.403f);
-		glTranslatef(1.251f, 0.f, 0.f);
+		glTranslatef(0.f, 0.f, (COMMON_GAP + CAT_L) / 2.f);
+		glTranslatef(COMMON_CENTER_X, 0.f, COMMON_CENTER_Z);
 		glRotatef(270.f, 0.f, 1.f, 0.f);
-		glTranslatef(2.226f, 0.002f, 0.626f);
 		glScalef(1.f, 1.f, 1.f);
+		glTranslatef(-0.815f, 0.002f, 0.f);
 		glCallList(CatList);
 	glPopMatrix();
 
 	// draw the cow object by calling up its display list:
 	glPushMatrix();
 		SetMaterial(0.f, 1.f, 0.f, 30.f);
-		glTranslatef(2.f, 0.f, 2.f * 2.f);
-		glTranslatef(0.f, 0.f, 4.447f * 1.5f);
-		glTranslatef(0.f, 0.f, 0.f);
+		glTranslatef(-(COMMON_GAP + COW_L) / 2.f, 0.f, 0.f);
+		glTranslatef(COMMON_CENTER_X, 0.f, COMMON_CENTER_Z);
 		glRotatef(0.f, 0.f, 1.f, 0.f);
-		glTranslatef(4.446f, 3.637f, 1.701f);
 		glScalef(1.f, 1.f, 1.f);
+		glTranslatef(-0.776f, 3.637f, 0.f);
 		glCallList(CowList);
 	glPopMatrix();
 
 	// draw the dog object by calling up its display list:
 	glPushMatrix();
 		SetMaterial(0.f, 0.f, 1.f, 30.f);
-		glTranslatef(2.f * 2.f, 0.f, 2.f);
-		glTranslatef(10.444f, 0.f, 0.f);
-		glTranslatef(0.f, 0.f, 0.f);
+		glTranslatef(0.f, 0.f, -(COMMON_GAP + DOG_L) / 2.f);
+		glTranslatef(COMMON_CENTER_X, 0.f, COMMON_CENTER_Z);
 		glRotatef(0.f, 0.f, 1.f, 0.f);
-		glTranslatef(0.639f * 1.5f, -0.003f * 1.5f, 2.356f * 1.5f);
 		glScalef(1.5f, 1.5f, 1.5f);
+		glTranslatef(0.047f, -0.003f, 0.133f);
 		glCallList(DogList);
 	glPopMatrix();
 
@@ -891,7 +904,7 @@ InitLists( )
 	AxesList = glGenLists( 1 );
 	glNewList( AxesList, GL_COMPILE );
 		glLineWidth( AXES_WIDTH );
-			Axes( 25.f );
+			Axes( AXES_LENGTH );
 		glLineWidth( 1. );
 	glEndList( );
 }

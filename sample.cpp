@@ -537,7 +537,7 @@ Display( )
 	} else {
 		SetSpotLight(GL_LIGHT0, SunPositionX, SunPositionY, SunPositionZ, -1.f, 0.f, 0.f, SunColorR, SunColorG, SunColorB);
 	}
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.3f, (float *) WHITE));
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.1f, (float *) WHITE));
 	glPushMatrix();
 		glTranslatef(SunPositionX, SunPositionY, SunPositionZ);
 		glColor3f(SunColorR, SunColorG, SunColorB);

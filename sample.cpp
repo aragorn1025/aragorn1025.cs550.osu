@@ -114,6 +114,12 @@ enum LightSourceType {
 	SPOT_LIGHT
 };
 
+// which spotl light directions:
+enum SpotLightDirections {
+	SPOTLIGHT_X_BACKWARD,
+	SPOTLIGHT_Z_BACKWARD
+};
+
 // window background color (rgba):
 
 const GLfloat BACKCOLOR[ ] = { 0., 0., 0., 1. };
@@ -243,6 +249,7 @@ int		MainWindow;				// window id for main graphics window
 int		NowColor;				// index into Colors[ ]
 int		NowProjection;		// ORTHO or PERSP
 int 	NowLightSourceType;		// POINT_LIGHT or SPOT_LIGHT
+int 	NowSpotLightDirection;	// SPOTLIGHT_X_BACKWARD or SPOTLIGHT_Z_BACKWARD
 float	Scale;					// scaling factor
 int		ShadowsOn;				// != 0 means to turn shadows on
 float	Time;					// used for animation, this has a value between 0. and 1.
@@ -538,7 +545,11 @@ Display( )
 	if (NowLightSourceType == POINT_LIGHT) {
 		SetPointLight(GL_LIGHT0, SunPositionX, SunPositionY, SunPositionZ, SunColorR, SunColorG, SunColorB);
 	} else {
-		SetSpotLight(GL_LIGHT0, SunPositionX, SunPositionY, SunPositionZ, -1.f, 0.f, 0.f, SunColorR, SunColorG, SunColorB);
+		if (NowSpotLightDirection == SPOTLIGHT_X_BACKWARD) {
+			SetSpotLight(GL_LIGHT0, SunPositionX, SunPositionY, SunPositionZ, -1.f, 0.f, 0.f, SunColorR, SunColorG, SunColorB);
+		} else {
+			SetSpotLight(GL_LIGHT0, SunPositionX, SunPositionY, SunPositionZ, 0.f, 0.f, -1.f, SunColorR, SunColorG, SunColorB);
+		}
 	}
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.1f, (float *) WHITE));
 	glPushMatrix();
@@ -1054,7 +1065,11 @@ Keyboard( unsigned char c, int x, int y )
 
 		case 's':
 		case 'S':
-			NowLightSourceType = SPOT_LIGHT;
+			if (NowLightSourceType != SPOT_LIGHT) {
+				NowLightSourceType = SPOT_LIGHT;
+			} else {
+				NowSpotLightDirection = (NowSpotLightDirection == SPOTLIGHT_X_BACKWARD) ? SPOTLIGHT_Z_BACKWARD : SPOTLIGHT_X_BACKWARD;
+			}
 			break;
 
 		case 'w':
@@ -1245,6 +1260,7 @@ Reset( )
 	NowColor = YELLOW;
 	NowProjection = PERSP;
 	NowLightSourceType = POINT_LIGHT;
+	NowSpotLightDirection = SPOTLIGHT_X_BACKWARD;
 	Xrot = Yrot = 0.;
 	IsFreeze = false;
 }

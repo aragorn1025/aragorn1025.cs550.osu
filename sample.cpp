@@ -152,53 +152,53 @@ const int MS_PER_CYCLE = 10000; // 10000 milliseconds = 10 seconds
 //#define DEMO_DEPTH_BUFFER
 
 // non-constant global variables:
-int			ActiveButton;			// current button that is down
-GLuint		AxesList;				// list to hold the axes
-int			AxesOn;					// != 0 means to draw the axes
-int			DebugOn;				// != 0 means to print debugging info
-int			DepthCueOn;				// != 0 means to use intensity depth cueing
-int			DepthBufferOn;			// != 0 means to use the z-buffer
-int			DepthFightingOn;		// != 0 means to force the creation of z-fighting
-int			MainWindow;				// window id for main graphics window
-int			NowColor;				// index into Colors[ ]
-int			NowProjection;			// ORTHO or PERSP
-float		Scale;					// scaling factor
-int			ShadowsOn;				// != 0 means to turn shadows on
-float		Time;					// used for animation, this has a value between 0. and 1.
-int			Xmouse, Ymouse;			// mouse values
-float		Xrot, Yrot;				// rotation angles in degrees
-bool		IsFreeze;				// animation freeze flag
-GLuint		MyList;					// TODO: add object display list here
+int		ActiveButton;			// current button that is down
+GLuint	AxesList;				// list to hold the axes
+int		AxesOn;					// != 0 means to draw the axes
+int		DebugOn;				// != 0 means to print debugging info
+int		DepthCueOn;				// != 0 means to use intensity depth cueing
+int		DepthBufferOn;			// != 0 means to use the z-buffer
+int		DepthFightingOn;		// != 0 means to force the creation of z-fighting
+int		MainWindow;				// window id for main graphics window
+int		NowColor;				// index into Colors[ ]
+int		NowProjection;			// ORTHO or PERSP
+float	Scale;					// scaling factor
+int		ShadowsOn;				// != 0 means to turn shadows on
+float	Time;					// used for animation, this has a value between 0. and 1.
+int		Xmouse, Ymouse;			// mouse values
+float	Xrot, Yrot;				// rotation angles in degrees
+bool	IsFreeze;				// animation freeze flag
+GLuint	MyList;					// TODO: add object display list here
 
 // function prototypes:
-void		Animate();
-void		Display();
-void		DoAxesMenu(int);
-void		DoColorMenu(int);
-void		DoDepthBufferMenu(int);
-void		DoDepthFightingMenu(int);
-void		DoDepthMenu(int);
-void		DoDebugMenu(int);
-void		DoMainMenu(int);
-void		DoProjectMenu(int);
-void		DoRasterString(float, float, float, char *);
-void		DoStrokeString(float, float, float, float, char *);
-float		ElapsedSeconds();
-void		InitGraphics();
-void		InitLists();
-void		InitMenus();
-void		Keyboard(unsigned char, int, int);
-void		MouseButton(int, int, int, int);
-void		MouseMotion(int, int);
-void		Reset();
-void		Resize(int, int);
-void		Visibility(int);
-void		Axes(float);
-void		HsvRgb(float[3], float[3]);
-void		Cross(float[3], float[3], float[3]);
-float		Dot(float[3], float[3]);
-float		Unit(float[3], float[3]);
-float		Unit(float[3]);
+void	Animate();
+void	Display();
+void	DoAxesMenu(int);
+void	DoColorMenu(int);
+void	DoDepthBufferMenu(int);
+void	DoDepthFightingMenu(int);
+void	DoDepthMenu(int);
+void	DoDebugMenu(int);
+void	DoMainMenu(int);
+void	DoProjectMenu(int);
+void	DoRasterString(float, float, float, char *);
+void	DoStrokeString(float, float, float, float, char *);
+float	ElapsedSeconds();
+void	InitGraphics();
+void	InitLists();
+void	InitMenus();
+void	Keyboard(unsigned char, int, int);
+void	MouseButton(int, int, int, int);
+void	MouseMotion(int, int);
+void	Reset();
+void	Resize(int, int);
+void	Visibility(int);
+void	Axes(float);
+void	HsvRgb(float[3], float[3]);
+void	Cross(float[3], float[3], float[3]);
+float	Dot(float[3], float[3]);
+float	Unit(float[3], float[3]);
+float	Unit(float[3]);
 
 // utility to create an array from 3 separate values:
 float *Array3(float a, float b, float c)

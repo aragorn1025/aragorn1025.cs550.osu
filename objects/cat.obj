@@ -1,6 +1,6 @@
 # Blender v2.91.0 OBJ File: ''
 # www.blender.org
-mtllib catL.mtl
+#mtllib catL.mtl
 o 12221_Cat_v1_l3
 v -2.201431 3.149525 0.040004
 v -2.170816 3.159972 0.059600

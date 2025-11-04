@@ -760,7 +760,7 @@ InitGraphics( )
 #endif
 
 	// all other setups go here, such as GLSLProgram and KeyTime setups:
-
+	// TODO: do something here
 }
 
 

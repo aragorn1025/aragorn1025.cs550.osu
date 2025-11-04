@@ -176,7 +176,7 @@ int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
 bool	IsFreeze;				// animation freeze flag
 bool	IsOutsideView;			// view mode flag
-GLuint	MyList;
+GLuint	HorsePathList;
 GLuint	HorseList;
 
 #include "objects/CarouselHorse0.10.550"
@@ -438,7 +438,7 @@ void Display()
 	glEnable(GL_NORMALIZE);
 
 	// draw the my object by calling up its display list:
-	glCallList(MyList);
+	glCallList(HorsePathList);
 
 	// draw the horse by calling up its display list:
 	glTranslatef(horse_dx, horse_dy, horse_dz);
@@ -697,8 +697,8 @@ void InitLists()
 	glutSetWindow(MainWindow);
 
 	// draw a red circle in the XZ-plane to show the rotation of the object:
-	MyList = glGenLists(1);
-	glNewList(MyList, GL_COMPILE);
+	HorsePathList = glGenLists(1);
+	glNewList(HorsePathList, GL_COMPILE);
 		glColor3f(1.0f, 0.0f, 0.0f);
 		glBegin(GL_LINE_LOOP);
 			for (int i = 0; i < CIRCLE_SLICES; i++)

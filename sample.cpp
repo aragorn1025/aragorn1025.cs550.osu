@@ -517,7 +517,7 @@ void Display()
 			glTranslatef(0.f, 0.f, (COMMON_GAP + CAT_L) / 2.f);
 			glTranslatef(COMMON_CENTER_X, 0.f, COMMON_CENTER_Z);
 			glRotatef(270.f, 0.f, 1.f, 0.f);
-			glScalef(1.f, 1.f, 1.f);
+			glScalef(CAT_SCALE, CAT_SCALE, CAT_SCALE);
 			glTranslatef(-0.815f, 0.002f, 0.f);
 			glShadeModel(GL_SMOOTH);
 			glCallList(CatList);
@@ -529,7 +529,7 @@ void Display()
 			glTranslatef(-(COMMON_GAP + COW_L) / 2.f, 0.f, 0.f);
 			glTranslatef(COMMON_CENTER_X, 0.f, COMMON_CENTER_Z);
 			glRotatef(0.f, 0.f, 1.f, 0.f);
-			glScalef(1.f, 1.f, 1.f);
+			glScalef(COW_SCALE, COW_SCALE, COW_SCALE);
 			glTranslatef(-0.776f, 3.637f, 0.f);
 			glShadeModel(GL_SMOOTH);
 			glCallList(CowList);
@@ -541,7 +541,7 @@ void Display()
 			glTranslatef(0.f, 0.f, -(COMMON_GAP + DOG_L) / 2.f);
 			glTranslatef(COMMON_CENTER_X, 0.f, COMMON_CENTER_Z);
 			glRotatef(0.f, 0.f, 1.f, 0.f);
-			glScalef(1.5f, 1.5f, 1.5f);
+			glScalef(DOG_SCALE, DOG_SCALE, DOG_SCALE);
 			glTranslatef(0.047f, -0.003f, 0.133f);
 			glShadeModel(GL_SMOOTH);
 			glCallList(DogList);

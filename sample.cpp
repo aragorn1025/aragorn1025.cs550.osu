@@ -667,11 +667,9 @@ void InitLists()
 
 	glutSetWindow(MainWindow);
 
-	MyList = glGenLists( 1 );
-	glNewList( MyList, GL_COMPILE );
-
-		// create the 3d football object:
-
+	// create the 3d football object:
+	MyList = glGenLists(1);
+	glNewList(MyList, GL_COMPILE);
 		// parameters of the 3d football to be drawn:
 		const float RX = 1.0f;	// radius in x direction
 		const float RY = 0.5f;	// radius in y direction
@@ -681,9 +679,10 @@ void InitLists()
 
 		// temporary storage for the hsv to rgb conversion:
 		float hsv[3], rgb[3];
-		hsv[2] = 1.f;  // HSV value. Just make it constant for simplicity.
+		hsv[2] = 1.f; // HSV value. Just make it constant for simplicity.
 
-		for (int i = 0; i < STACKS; i++) {
+		for (int i = 0; i < STACKS; i++)
+		{
 			// get the angles for the current stack and the next stack, so we can draw a quad strip:
 			float theta1 = F_PI_2 - (float)i * F_PI / (float)STACKS;
 			float theta2 = F_PI_2 - (float)(i + 1) * F_PI / (float)STACKS;
@@ -694,40 +693,40 @@ void InitLists()
 			float cosTheta2 = cosf(theta2);
 			float sinTheta2 = sinf(theta2);
 
-			hsv[1] = 0.1f + abs(cosTheta1) * 0.9f;  // HSV saturation, based on the current stack angle but make it at least 0.1 to avoid pure white at the poles
+			hsv[1] = 0.1f + abs(cosTheta1) * 0.9f; // HSV saturation, based on the current stack angle but make it at least 0.1 to avoid pure white at the poles
 
 			glBegin(GL_QUAD_STRIP);
-			for (int j = 0; j <= SLICES; j++) {
-				// get the angle for this slice:
-				float phi = (float)j * F_2_PI / (float)SLICES;
-				
-				// precompute the sine and cosine of this angle for efficiency:
-				float cosPhi = cosf(phi);
-				float sinPhi = sinf(phi);
-				
-				// get the coordinates of the vertex in the current stack:
-				float x1 = RX * cosTheta1 * cosPhi;
-				float y1 = RY * sinTheta1;
-				float z1 = RZ * cosTheta1 * sinPhi;
-				
-				// get the coordinates of the vertex in the next stack:
-				float x2 = RX * cosTheta2 * cosPhi;
-				float y2 = RY * sinTheta2;
-				float z2 = RZ * cosTheta2 * sinPhi;
-				
-				// set the color of the quad strip based on the position of the vertex:
-				hsv[0] = (float)j / (float)SLICES * 360.f;	// HSV hue, based on the current slice angle
-				HsvRgb(hsv, rgb);
-				glColor3f(rgb[0], rgb[1], rgb[2]);
+				for (int j = 0; j <= SLICES; j++)
+				{
+					// get the angle for this slice:
+					float phi = (float)j * F_2_PI / (float)SLICES;
 
-				// set the vertex for the current slice, and this vertex is also used for the next slice:
-				glVertex3f(x1, y1, z1);
-				glVertex3f(x2 , y2 , z2 );
-			}
+					// precompute the sine and cosine of this angle for efficiency:
+					float cosPhi = cosf(phi);
+					float sinPhi = sinf(phi);
+
+					// get the coordinates of the vertex in the current stack:
+					float x1 = RX * cosTheta1 * cosPhi;
+					float y1 = RY * sinTheta1;
+					float z1 = RZ * cosTheta1 * sinPhi;
+
+					// get the coordinates of the vertex in the next stack:
+					float x2 = RX * cosTheta2 * cosPhi;
+					float y2 = RY * sinTheta2;
+					float z2 = RZ * cosTheta2 * sinPhi;
+
+					// set the color of the quad strip based on the position of the vertex:
+					hsv[0] = (float)j / (float)SLICES * 360.f; // HSV hue, based on the current slice angle
+					HsvRgb(hsv, rgb);
+					glColor3f(rgb[0], rgb[1], rgb[2]);
+
+					// set the vertex for the current slice, and this vertex is also used for the next slice:
+					glVertex3f(x1, y1, z1);
+					glVertex3f(x2, y2, z2);
+				}
 			glEnd();
 		}
-
-	glEndList( );
+	glEndList();
 
 	// create the axes:
 	AxesList = glGenLists(1);

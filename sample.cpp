@@ -288,9 +288,17 @@ void TimeOfDaySeed()
 //#include "osutorus.cpp"
 #include "bmptotexture.cpp"
 #include "loadobjmtlfiles.cpp"
-//#include "keytime.cpp"
+#include "keytime.cpp"
 //#include "glslprogram.cpp"
 //#include "vertexbufferobject.cpp"
+
+// keytime objects:
+Keytimes	CatPositionX;
+Keytimes	CatPositionZ;
+Keytimes	CatDirection;
+Keytimes	DogPositionX;
+Keytimes	DogPositionZ;
+Keytimes	DogDirection;
 
 // main program:
 int main(int argc, char *argv[])
@@ -363,6 +371,9 @@ void Display()
 	if (DepthBufferOn == 0)
 		glDisable(GL_DEPTH_TEST);
 #endif
+
+	// get the time in seconds:
+	float seconds = (float)(glutGet(GLUT_ELAPSED_TIME) % MS_PER_CYCLE) / 1000.f;
 
 	// specify shading to be flat:
 	glShadeModel(GL_FLAT);
@@ -448,8 +459,8 @@ void Display()
 		// draw the cat object by calling the display list:
 		glPushMatrix();
 			SetMaterial(0.8f, 0.2f, 0.2f, 5.f);
-			glTranslatef(0.f, 0.f, 3.f + DOG_L);
-			glRotatef(90.f, 0.f, 1.f, 0.f);
+			glTranslatef(CatPositionX.GetValue(seconds), 0.f, CatPositionZ.GetValue(seconds));
+			glRotatef(90.f + CatDirection.GetValue(seconds), 0.f, 1.f, 0.f);
 			glScalef(CAT_SCALE, CAT_SCALE, CAT_SCALE);
 			glTranslatef(-0.815f, 0.002f, 0.f);
 			glShadeModel(GL_SMOOTH);
@@ -459,7 +470,8 @@ void Display()
 		// draw the dog object by calling the display list:
 		glPushMatrix();
 			SetMaterial(0.2f, 0.2f, 0.8f, 100.f);
-			glRotatef(0.f, 0.f, 1.f, 0.f);
+			glTranslatef(DogPositionX.GetValue(seconds), 0.f, DogPositionZ.GetValue(seconds));
+			glRotatef(DogDirection.GetValue(seconds), 0.f, 1.f, 0.f);
 			glScalef(DOG_SCALE, DOG_SCALE, DOG_SCALE);
 			glTranslatef(0.047, -0.003f, 0.133f);
 			glShadeModel(GL_SMOOTH);
@@ -703,7 +715,32 @@ void InitGraphics()
 #endif
 
 	// all other setups go here, such as GLSLProgram and KeyTime setups:
-	// TODO: do something here
+	int numberTimes = 9;
+	float times[] = {0.00f, 1.25f, 2.50f, 3.75f, 5.00f, 6.25f, 7.50f, 8.25f, 10.00f};
+
+	float catPositionX[] = {0, 10, 0, -10, 0, 10, 0, -10, 0};
+    float catPositionZ[] = {0, 10, 20, 10, 0, -10, -20, -10, 0};
+    float catDirection[]  = {45, 0, -90, -180, -225, -180, -90, 0, 45};
+	CatPositionX.Init();
+	CatPositionZ.Init();
+	CatDirection.Init();
+	for (int i = 0; i < numberTimes; ++i) {
+        CatPositionX.AddTimeValue(times[i], catPositionX[i]);
+        CatPositionZ.AddTimeValue(times[i], catPositionZ[i]);
+        CatDirection.AddTimeValue(times[i], catDirection[i]);
+    }
+
+	float dogPositionX[] = {-10, 0, 10, 0, -10, 0, 10, 0, -10};
+    float dogPositionZ[] = {-10, 0, 10, 20, 10, 0, -10, -20, -10};
+    float dogDirection[]  = {0, 45, 0, -90, -180, -225, -180, -90, 0};
+	DogPositionX.Init();
+	DogPositionZ.Init();
+	DogDirection.Init();
+	for (int i = 0; i < numberTimes; ++i) {
+		DogPositionX.AddTimeValue(times[i], dogPositionX[i]);
+		DogPositionZ.AddTimeValue(times[i], dogPositionZ[i]);
+		DogDirection.AddTimeValue(times[i], dogDirection[i]);
+	}
 }
 
 // initialize the display lists that will not change:

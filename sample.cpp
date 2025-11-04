@@ -152,11 +152,11 @@ const int MS_PER_CYCLE = 10000; // 10000 milliseconds = 10 seconds
 //#define DEMO_DEPTH_BUFFER
 
 // the parameters for the circle path of the horse:
-const float CIRCLE_RADIUS = 2.0f;
-const int   CIRCLE_SLICES = 60;
-const int   HORSE_BOUNCE_COUNT = 6;
-const float HORSE_BOUNCE_HEIGHT = 0.5f;
-const float HORSE_BOUNCE_ANGLE = 15.f;
+const float		CIRCLE_RADIUS = 2.0f;
+const int		CIRCLE_SLICES = 60;
+const int		HORSE_BOUNCE_COUNT = 6;
+const float		HORSE_BOUNCE_HEIGHT = 0.5f;
+const float		HORSE_BOUNCE_ANGLE = 15.f;
 
 // non-constant global variables:
 int		ActiveButton;			// current button that is down
@@ -177,7 +177,7 @@ float	Xrot, Yrot;				// rotation angles in degrees
 bool	IsFreeze;				// animation freeze flag
 bool	IsOutsideView;			// view mode flag
 GLuint	MyList;
-GLuint  HorseList;
+GLuint	HorseList;
 
 #include "objects/CarouselHorse0.10.550"
 
@@ -385,12 +385,12 @@ void Display()
 	glLoadIdentity();
 
 	// set the translation of the hosre:
-	float horse_dx = CIRCLE_RADIUS * sinf( Time * F_2_PI );
-	float horse_dy = HORSE_BOUNCE_HEIGHT * sinf( HORSE_BOUNCE_COUNT * Time * F_2_PI );
-	float horse_dz = CIRCLE_RADIUS * cosf( Time * F_2_PI );
+	float horse_dx = CIRCLE_RADIUS * sinf(Time * F_2_PI);
+	float horse_dy = HORSE_BOUNCE_HEIGHT * sinf(HORSE_BOUNCE_COUNT * Time * F_2_PI);
+	float horse_dz = CIRCLE_RADIUS * cosf(Time * F_2_PI);
 
 	// set the eye position, look-at position, and up-vector:
-	if ( IsOutsideView )
+	if (IsOutsideView)
 		gluLookAt(
 			3.f, 3.f, 3.f,				// eye position
 			0.f, 0.f, 0.f,				// look-at position
@@ -441,10 +441,10 @@ void Display()
 	glCallList(MyList);
 
 	// draw the horse by calling up its display list:
-	glTranslatef( horse_dx, horse_dy, horse_dz );
-	glRotatef( Time * 360.f, 0.f, 1.f, 0.f );
-	glRotatef( HORSE_BOUNCE_ANGLE * sinf(HORSE_BOUNCE_COUNT * Time * F_2_PI), 0.f, 0.f, 1.f );
-	glCallList( HorseList );
+	glTranslatef(horse_dx, horse_dy, horse_dz);
+	glRotatef(Time * 360.f, 0.f, 1.f, 0.f);
+	glRotatef(HORSE_BOUNCE_ANGLE * sinf(HORSE_BOUNCE_COUNT * Time * F_2_PI), 0.f, 0.f, 1.f);
+	glCallList(HorseList);
 
 	// draw some gratuitous text that just rotates on top of the scene:
 	// i commented out the actual text-drawing calls -- put them back in if you have a use for them
@@ -695,41 +695,40 @@ void InitLists()
 		fprintf(stderr, "Starting InitLists.\n");
 
 	glutSetWindow(MainWindow);
-	
-	MyList = glGenLists(1);
-	glNewList(MyList, GL_COMPILE);
 
 	// draw a red circle in the XZ-plane to show the rotation of the object:
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glBegin(GL_LINE_LOOP);
-	for (int i = 0; i < CIRCLE_SLICES; i ++) {
-		// get the angle for this slice:
-		float theta = (float)i * F_2_PI / (float)CIRCLE_SLICES;
+	MyList = glGenLists(1);
+	glNewList(MyList, GL_COMPILE);
+		glColor3f(1.0f, 0.0f, 0.0f);
+		glBegin(GL_LINE_LOOP);
+			for (int i = 0; i < CIRCLE_SLICES; i++)
+			{
+				// get the angle for this slice:
+				float theta = (float)i * F_2_PI / (float)CIRCLE_SLICES;
 
-		// get the x, y, z coordinates:
-		float x = CIRCLE_RADIUS * cosf(theta);
-		float y = 0.0f;
-		float z = CIRCLE_RADIUS * sinf(theta);
+				// get the x, y, z coordinates:
+				float x = CIRCLE_RADIUS * cosf(theta);
+				float y = 0.0f;
+				float z = CIRCLE_RADIUS * sinf(theta);
 
-		// draw the vertex:
-		glVertex3f(x, y, z);
-	}
-	glEnd();
-
+				// draw the vertex:
+				glVertex3f(x, y, z);
+			}
+		glEnd();
 	glEndList();
-	
+
 	// load the horse object:
-	HorseList = glGenLists( 1 );
-	glNewList( HorseList, GL_COMPILE );
-		glPushMatrix( );
+	HorseList = glGenLists(1);
+	glNewList(HorseList, GL_COMPILE);
+		glPushMatrix();
 			glRotatef(90.f, 0., 1., 0.);
-			glTranslatef( 0., -1.1f, 0.f);
-			glBegin( GL_TRIANGLES );
-				for( int i = 0; i < HORSEntris; i++ )
+			glTranslatef(0., -1.1f, 0.f);
+			glBegin(GL_TRIANGLES);
+				for (int i = 0; i < HORSEntris; i++)
 				{
-					struct point p0 = HORSEpoints[ HORSEtris[i].p0 ];
-					struct point p1 = HORSEpoints[ HORSEtris[i].p1 ];
-					struct point p2 = HORSEpoints[ HORSEtris[i].p2 ];
+					struct point p0 = HORSEpoints[HORSEtris[i].p0];
+					struct point p1 = HORSEpoints[HORSEtris[i].p1];
+					struct point p2 = HORSEpoints[HORSEtris[i].p2];
 
 					// fake "lighting" from above:
 
@@ -740,19 +739,19 @@ void InitLists()
 					p02[0] = p2.x - p0.x;
 					p02[1] = p2.y - p0.y;
 					p02[2] = p2.z - p0.z;
-					Cross( p01, p02, n );
-					Unit( n, n );
-					n[1] = (float)fabs( n[1] );
+					Cross(p01, p02, n);
+					Unit(n, n);
+					n[1] = (float)fabs(n[1]);
 					// simulating a glColor3f( 1., 1., 0. ) = yellow:
-					glColor3f( 1.f*n[1], 1.f*n[1], 0.f*n[1]);
+					glColor3f(1.f * n[1], 1.f * n[1], 0.f * n[1]);
 
-					glVertex3f( p0.x, p0.y, p0.z );
-					glVertex3f( p1.x, p1.y, p1.z );
-					glVertex3f( p2.x, p2.y, p2.z );
+					glVertex3f(p0.x, p0.y, p0.z);
+					glVertex3f(p1.x, p1.y, p1.z);
+					glVertex3f(p2.x, p2.y, p2.z);
 				}
-			glEnd( );
-		glPopMatrix( );
-	glEndList( );
+			glEnd();
+		glPopMatrix();
+	glEndList();
 
 	// create the axes:
 	AxesList = glGenLists(1);

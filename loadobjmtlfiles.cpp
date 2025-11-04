@@ -32,6 +32,9 @@ LoadObjMtlFiles( char *name )
 #ifdef _WIN32
         errno_t err = fopen_s( &fp, name, "r" );
     	if( err != 0 )
+#elif defined(__APPLE__)
+	fp = fopen( name, "r" );
+	if( fp == NULL )
 #else
 	fp = fopen( str, "r" );
 	if( fp == NULL )

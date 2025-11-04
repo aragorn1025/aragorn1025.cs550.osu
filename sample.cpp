@@ -293,6 +293,12 @@ void TimeOfDaySeed()
 //#include "vertexbufferobject.cpp"
 
 // keytime objects:
+Keytimes	EyePositionX;
+Keytimes	EyePositionY;
+Keytimes	EyePositionZ;
+Keytimes	EyeLookAtX;
+Keytimes	EyeLookAtY;
+Keytimes	EyeLookAtZ;
 Keytimes	CatPositionX;
 Keytimes	CatPositionZ;
 Keytimes	CatDirection;
@@ -402,8 +408,8 @@ void Display()
 
 	// set the eye position, look-at position, and up-vector:
 	gluLookAt(
-		0.f, 0.f, 3.f, // eye position
-		0.f, 0.f, 0.f, // look-at position
+		EyePositionX.GetValue(seconds), EyePositionY.GetValue(seconds), EyePositionZ.GetValue(seconds),
+		EyeLookAtX.GetValue(seconds), EyeLookAtY.GetValue(seconds), EyeLookAtZ.GetValue(seconds),
 		0.f, 1.f, 0.f  // up-vector
 	);
 
@@ -740,6 +746,30 @@ void InitGraphics()
 		DogPositionX.AddTimeValue(times[i], dogPositionX[i]);
 		DogPositionZ.AddTimeValue(times[i], dogPositionZ[i]);
 		DogDirection.AddTimeValue(times[i], dogDirection[i]);
+	}
+
+	float eyePositionX[] = {0, 30, 0, -30, 0, 30, 0, -30, 0};
+	float eyePositionY[] = {10, 20, 30, 20, 10, 20, 30, 20, 10};
+	float eyePositionZ[] = {50, 30, 10, 30, 50, 30, 10, 30, 50};
+	EyePositionX.Init();
+	EyePositionY.Init();
+	EyePositionZ.Init();
+	for (int i = 0; i < numberTimes; ++i) {
+		EyePositionX.AddTimeValue(times[i], eyePositionX[i]);
+		EyePositionY.AddTimeValue(times[i], eyePositionY[i]);
+		EyePositionZ.AddTimeValue(times[i], eyePositionZ[i]);
+	}
+
+	float eyeLookAtX[] = {0, 5, 0, 5, 0, 5, 0, 5, 0};
+	float eyeLookAtY[] = {5, 0, 0, 0, 5, 0, 0, 0, 5};
+	float eyeLookAtZ[] = {0, 5, 0, 5, 0, 5, 0, 5, 0};
+	EyeLookAtX.Init();
+	EyeLookAtY.Init();
+	EyeLookAtZ.Init();
+	for (int i = 0; i < numberTimes; ++i) {
+		EyeLookAtX.AddTimeValue(times[i], eyeLookAtX[i]);
+		EyeLookAtY.AddTimeValue(times[i], eyeLookAtY[i]);
+		EyeLookAtZ.AddTimeValue(times[i], eyeLookAtZ[i]);
 	}
 }
 

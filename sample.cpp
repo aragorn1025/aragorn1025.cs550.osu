@@ -151,6 +151,14 @@ const int MS_PER_CYCLE = 10000; // 10000 milliseconds = 10 seconds
 //#define DEMO_Z_FIGHTING
 //#define DEMO_DEPTH_BUFFER
 
+// object parameters:
+const float		SUN_RADIUS			= 0.5f;
+const int		SUN_SLICES			= 30;
+const int		SUN_STACKS			= 30;
+const float		SUN_POSITION_X		= 0.f;
+const float		SUN_POSITION_Y		= 30.f;
+const float		SUN_POSITION_Z		= 0.f;
+
 // non-constant global variables:
 int		ActiveButton;			// current button that is down
 GLuint	AxesList;				// list to hold the axes
@@ -168,7 +176,7 @@ float	Time;					// used for animation, this has a value between 0. and 1.
 int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
 bool	IsFreeze;				// animation freeze flag
-GLuint	MyList;					// TODO: add object display list here
+GLuint	SunList;
 
 // function prototypes:
 void	Animate();
@@ -265,8 +273,8 @@ void TimeOfDaySeed()
 
 // these are here for when you need them -- just uncomment the ones you need:
 //#include "setmaterial.cpp"
-//#include "setlight.cpp"
-//#include "osusphere.cpp"
+#include "setlight.cpp"
+#include "osusphere.cpp"
 //#include "osucube.cpp"
 //#include "osucylindercone.cpp"
 //#include "osutorus.cpp"
@@ -414,8 +422,22 @@ void Display()
 	// since we are using glScalef( ), be sure the normals get unitized:
 	glEnable(GL_NORMALIZE);
 
-	// draw the box object by calling up its display list:
-	glCallList(MyList);
+	// set the light source:
+	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0f);
+	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 1.0f);
+	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 1.0f);
+	SetPointLight(GL_LIGHT0, SUN_POSITION_X, SUN_POSITION_Y, SUN_POSITION_Z, 1., 1., 1.);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.1f, (float *)WHITE));
+	glPushMatrix();
+		glTranslatef(SUN_POSITION_X, SUN_POSITION_Y, SUN_POSITION_Z);
+		glColor3f(1.f, 1.f, 1.f);
+		glCallList(SunList);
+	glPopMatrix();
+
+	// enable the light source:
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glDisable(GL_LIGHTING);
 
 	// draw some gratuitous text that just rotates on top of the scene:
 	// i commented out the actual text-drawing calls -- put them back in if you have a use for them
@@ -667,9 +689,10 @@ void InitLists()
 
 	glutSetWindow(MainWindow);
 
-	MyList = glGenLists(1);
-	glNewList(MyList, GL_COMPILE);
-		// TODO: do something here
+	// sun
+	SunList = glGenLists(1);
+	glNewList(SunList, GL_COMPILE);
+		OsuSphere(SUN_RADIUS, SUN_SLICES, SUN_STACKS);
 	glEndList();
 
 	// create the axes:

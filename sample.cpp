@@ -502,51 +502,50 @@ void Display()
 		glCallList(SunList);
 	glPopMatrix();
 
+	// enable the light source:
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
+		// draw the wall object by calling up its display list:
+		glPushMatrix();
+			glShadeModel(GL_SMOOTH);
+			glCallList(WallList);
+		glPopMatrix();
 
-	// draw the wall object by calling up its display list:
-	glPushMatrix();
-		glShadeModel(GL_SMOOTH);
-		glCallList(WallList);
-	glPopMatrix();
+		// draw the cat object by calling up its display list:
+		glPushMatrix();
+			SetMaterial(0.8f, 0.2f, 0.2f, 5.f);
+			glTranslatef(0.f, 0.f, (COMMON_GAP + CAT_L) / 2.f);
+			glTranslatef(COMMON_CENTER_X, 0.f, COMMON_CENTER_Z);
+			glRotatef(270.f, 0.f, 1.f, 0.f);
+			glScalef(1.f, 1.f, 1.f);
+			glTranslatef(-0.815f, 0.002f, 0.f);
+			glShadeModel(GL_SMOOTH);
+			glCallList(CatList);
+		glPopMatrix();
 
-	// draw the cat object by calling up its display list:
-	glPushMatrix();
-		SetMaterial(0.8f, 0.2f, 0.2f, 5.f);
-		glTranslatef(0.f, 0.f, (COMMON_GAP + CAT_L) / 2.f);
-		glTranslatef(COMMON_CENTER_X, 0.f, COMMON_CENTER_Z);
-		glRotatef(270.f, 0.f, 1.f, 0.f);
-		glScalef(1.f, 1.f, 1.f);
-		glTranslatef(-0.815f, 0.002f, 0.f);
-		glShadeModel(GL_SMOOTH);
-		glCallList(CatList);
-	glPopMatrix();
+		// draw the cow object by calling up its display list:
+		glPushMatrix();
+			SetMaterial(0.2f, 0.8f, 0.2f, 50.f);
+			glTranslatef(-(COMMON_GAP + COW_L) / 2.f, 0.f, 0.f);
+			glTranslatef(COMMON_CENTER_X, 0.f, COMMON_CENTER_Z);
+			glRotatef(0.f, 0.f, 1.f, 0.f);
+			glScalef(1.f, 1.f, 1.f);
+			glTranslatef(-0.776f, 3.637f, 0.f);
+			glShadeModel(GL_SMOOTH);
+			glCallList(CowList);
+		glPopMatrix();
 
-	// draw the cow object by calling up its display list:
-	glPushMatrix();
-		SetMaterial(0.2f, 0.8f, 0.2f, 50.f);
-		glTranslatef(-(COMMON_GAP + COW_L) / 2.f, 0.f, 0.f);
-		glTranslatef(COMMON_CENTER_X, 0.f, COMMON_CENTER_Z);
-		glRotatef(0.f, 0.f, 1.f, 0.f);
-		glScalef(1.f, 1.f, 1.f);
-		glTranslatef(-0.776f, 3.637f, 0.f);
-		glShadeModel(GL_SMOOTH);
-		glCallList(CowList);
-	glPopMatrix();
-
-	// draw the dog object by calling up its display list:
-	glPushMatrix();
-		SetMaterial(0.2f, 0.2f, 0.8f, 100.f);
-		glTranslatef(0.f, 0.f, -(COMMON_GAP + DOG_L) / 2.f);
-		glTranslatef(COMMON_CENTER_X, 0.f, COMMON_CENTER_Z);
-		glRotatef(0.f, 0.f, 1.f, 0.f);
-		glScalef(1.5f, 1.5f, 1.5f);
-		glTranslatef(0.047f, -0.003f, 0.133f);
-		glShadeModel(GL_SMOOTH);
-		glCallList(DogList);
-	glPopMatrix();
-
+		// draw the dog object by calling up its display list:
+		glPushMatrix();
+			SetMaterial(0.2f, 0.2f, 0.8f, 100.f);
+			glTranslatef(0.f, 0.f, -(COMMON_GAP + DOG_L) / 2.f);
+			glTranslatef(COMMON_CENTER_X, 0.f, COMMON_CENTER_Z);
+			glRotatef(0.f, 0.f, 1.f, 0.f);
+			glScalef(1.5f, 1.5f, 1.5f);
+			glTranslatef(0.047f, -0.003f, 0.133f);
+			glShadeModel(GL_SMOOTH);
+			glCallList(DogList);
+		glPopMatrix();
 	glDisable(GL_LIGHTING);
 
 	// draw some gratuitous text that just rotates on top of the scene:

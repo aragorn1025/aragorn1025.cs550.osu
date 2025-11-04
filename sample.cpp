@@ -152,6 +152,7 @@ const int MS_PER_CYCLE = 10000; // 10000 milliseconds = 10 seconds
 //#define DEMO_DEPTH_BUFFER
 
 // object parameters:
+const float		AXES_LENGTH			= 22.f;
 const float		SUN_RADIUS			= 0.5f;
 const int		SUN_SLICES			= 30;
 const int		SUN_STACKS			= 30;
@@ -798,7 +799,7 @@ void InitLists()
 	AxesList = glGenLists(1);
 	glNewList(AxesList, GL_COMPILE);
 		glLineWidth(AXES_WIDTH);
-			Axes(1.5);
+			Axes(AXES_LENGTH);
 		glLineWidth(1.);
 	glEndList();
 }

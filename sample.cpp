@@ -27,19 +27,6 @@
 
 #include "glut.h"
 
-// these are here for when you need them -- just uncomment the ones you need:
-//#include "setmaterial.cpp"
-//#include "setlight.cpp"
-//#include "osusphere.cpp"
-//#include "osucube.cpp"
-//#include "osucylindercone.cpp"
-//#include "osutorus.cpp"
-//#include "bmptotexture.cpp"
-//#include "loadobjmtlfiles.cpp"
-//#include "keytime.cpp"
-//#include "glslprogram.cpp"
-//#include "vertexbufferobject.cpp"
-
 //	This is a sample OpenGL / GLUT program
 //
 //	The objective is to draw a 3d object and change the color of the axes
@@ -275,6 +262,19 @@ void TimeOfDaySeed()
 	unsigned int seed = (unsigned int)(1000. * seconds); // milliseconds
 	srand(seed);
 }
+
+// these are here for when you need them -- just uncomment the ones you need:
+//#include "setmaterial.cpp"
+//#include "setlight.cpp"
+//#include "osusphere.cpp"
+//#include "osucube.cpp"
+//#include "osucylindercone.cpp"
+//#include "osutorus.cpp"
+//#include "bmptotexture.cpp"
+//#include "loadobjmtlfiles.cpp"
+//#include "keytime.cpp"
+//#include "glslprogram.cpp"
+//#include "vertexbufferobject.cpp"
 
 // main program:
 int main(int argc, char *argv[])

@@ -158,6 +158,12 @@ const int		SUN_STACKS			= 30;
 const float		SUN_POSITION_X		= 0.f;
 const float		SUN_POSITION_Y		= 30.f;
 const float		SUN_POSITION_Z		= 0.f;
+const float		CAT_SCALE			= 1.f;
+const float		CAT_L				= 6.087f * CAT_SCALE;
+const float		CAT_W				= 1.251f * CAT_SCALE;
+const float		DOG_SCALE			= 1.5f;
+const float		DOG_L				= 4.447f * DOG_SCALE;
+const float		DOG_W				= 1.184f * DOG_SCALE;
 
 // non-constant global variables:
 int		ActiveButton;			// current button that is down
@@ -177,6 +183,8 @@ int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
 bool	IsFreeze;				// animation freeze flag
 GLuint	SunList;
+GLuint	CatList;
+GLuint	DogList;
 
 // function prototypes:
 void	Animate();
@@ -272,14 +280,14 @@ void TimeOfDaySeed()
 }
 
 // these are here for when you need them -- just uncomment the ones you need:
-//#include "setmaterial.cpp"
+#include "setmaterial.cpp"
 #include "setlight.cpp"
 #include "osusphere.cpp"
 //#include "osucube.cpp"
 //#include "osucylindercone.cpp"
 //#include "osutorus.cpp"
-//#include "bmptotexture.cpp"
-//#include "loadobjmtlfiles.cpp"
+#include "bmptotexture.cpp"
+#include "loadobjmtlfiles.cpp"
 //#include "keytime.cpp"
 //#include "glslprogram.cpp"
 //#include "vertexbufferobject.cpp"
@@ -437,6 +445,26 @@ void Display()
 	// enable the light source:
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
+		// draw the cat object by calling the display list:
+		glPushMatrix();
+			SetMaterial(0.8f, 0.2f, 0.2f, 5.f);
+			glTranslatef(0.f, 0.f, 3.f + DOG_L);
+			glRotatef(90.f, 0.f, 1.f, 0.f);
+			glScalef(CAT_SCALE, CAT_SCALE, CAT_SCALE);
+			glTranslatef(-0.815f, 0.002f, 0.f);
+			glShadeModel(GL_SMOOTH);
+			glCallList(CatList);
+		glPopMatrix();
+
+		// draw the dog object by calling the display list:
+		glPushMatrix();
+			SetMaterial(0.2f, 0.2f, 0.8f, 100.f);
+			glRotatef(0.f, 0.f, 1.f, 0.f);
+			glScalef(DOG_SCALE, DOG_SCALE, DOG_SCALE);
+			glTranslatef(0.047, -0.003f, 0.133f);
+			glShadeModel(GL_SMOOTH);
+			glCallList(DogList);
+		glPopMatrix();
 	glDisable(GL_LIGHTING);
 
 	// draw some gratuitous text that just rotates on top of the scene:
@@ -694,6 +722,10 @@ void InitLists()
 	glNewList(SunList, GL_COMPILE);
 		OsuSphere(SUN_RADIUS, SUN_SLICES, SUN_STACKS);
 	glEndList();
+
+	// load the objects:
+	CatList = LoadObjMtlFiles((char *)"objects/cat.obj");
+	DogList = LoadObjMtlFiles((char *)"objects/dog.obj");
 
 	// create the axes:
 	AxesList = glGenLists(1);

@@ -168,7 +168,7 @@ float	Time;					// used for animation, this has a value between 0. and 1.
 int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
 bool	IsFreeze;				// animation freeze flag
-GLuint	MyList;					// TODO: add object display list here
+GLuint	FootballList;
 
 // function prototypes:
 void	Animate();
@@ -414,8 +414,8 @@ void Display()
 	// since we are using glScalef( ), be sure the normals get unitized:
 	glEnable(GL_NORMALIZE);
 
-	// draw the box object by calling up its display list:
-	glCallList(MyList);
+	// draw the football object by calling up its display list:
+	glCallList(FootballList);
 
 	// draw some gratuitous text that just rotates on top of the scene:
 	// i commented out the actual text-drawing calls -- put them back in if you have a use for them
@@ -668,8 +668,8 @@ void InitLists()
 	glutSetWindow(MainWindow);
 
 	// create the 3d football object:
-	MyList = glGenLists(1);
-	glNewList(MyList, GL_COMPILE);
+	FootballList = glGenLists(1);
+	glNewList(FootballList, GL_COMPILE);
 		// parameters of the 3d football to be drawn:
 		const float RX = 1.0f;	// radius in x direction
 		const float RY = 0.5f;	// radius in y direction

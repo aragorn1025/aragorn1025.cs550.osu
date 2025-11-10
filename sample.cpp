@@ -46,7 +46,7 @@
 //	Author:			Joe Graphics
 
 // title of these windows:
-const char *WINDOWTITLE = "OpenGL / GLUT Sample -- Joe Graphics"; // TODO: change this title for each project
+const char *WINDOWTITLE = "OpenGL / GLUT Project #5 -- Tz-Jie Dai";
 const char *GLUITITLE   = "User Interface Window";
 
 // what the glui package defines as true and false:

@@ -156,6 +156,10 @@ const float		SPHERE_RADIUS		= 1.0f;
 const int		SPHERE_SLICES		= 50;
 const int		SPHERE_STACKS		= 50;
 const float		CUBE_SIDE			= 1.5f;
+const float		CYLINDER_RADIUS		= 0.5f;
+const float		CYLINDER_HEIGHT		= 1.5f;
+const int		CYLINDER_SLICES		= 50;
+const int		CYLINDER_STACKS		= 50;
 
 // non-constant global variables:
 int		ActiveButton;			// current button that is down
@@ -176,6 +180,7 @@ float	Xrot, Yrot;				// rotation angles in degrees
 bool	IsFreeze;				// animation freeze flag
 GLuint	SphereList;
 GLuint	CubeList;
+GLuint	CylinderList;
 
 // function prototypes:
 void	Animate();
@@ -275,7 +280,7 @@ void TimeOfDaySeed()
 //#include "setlight.cpp"
 #include "osusphere.cpp"
 #include "osucube.cpp"
-//#include "osucylindercone.cpp"
+#include "osucylindercone.cpp"
 //#include "osutorus.cpp"
 //#include "bmptotexture.cpp"
 //#include "loadobjmtlfiles.cpp"
@@ -424,6 +429,7 @@ void Display()
 	// draw the objects by calling up their display list:
 	glCallList(SphereList);
 	glCallList(CubeList);
+	glCallList(CylinderList);
 
 	// draw some gratuitous text that just rotates on top of the scene:
 	// i commented out the actual text-drawing calls -- put them back in if you have a use for them
@@ -683,6 +689,11 @@ void InitLists()
 	CubeList = glGenLists(1);
 	glNewList(CubeList, GL_COMPILE);
 		OsuCube(CUBE_SIDE);
+	glEndList();
+
+	CylinderList = glGenLists(1);
+	glNewList(CylinderList, GL_COMPILE);
+		OsuCylinder(CYLINDER_RADIUS, CYLINDER_HEIGHT, CYLINDER_SLICES, CYLINDER_STACKS);
 	glEndList();
 
 	// create the axes:

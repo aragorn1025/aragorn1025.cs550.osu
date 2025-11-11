@@ -165,6 +165,10 @@ const float		CONE_RADIUS_TOP		= 0.0f;
 const float		CONE_HEIGHT			= 1.5f;
 const int		CONE_SLICES			= 50;
 const int		CONE_STACKS			= 50;
+const float		TORUS_INNER_RADIUS	= 0.3f;
+const float		TORUS_OUTER_RADIUS	= 0.7f;
+const int		TORUS_NSIDES		= 30;
+const int		TORUS_NRINGS		= 30;
 
 // non-constant global variables:
 int		ActiveButton;			// current button that is down
@@ -187,6 +191,7 @@ GLuint	SphereList;
 GLuint	CubeList;
 GLuint	CylinderList;
 GLuint	ConeList;
+GLuint	TorusList;
 
 // function prototypes:
 void	Animate();
@@ -287,7 +292,7 @@ void TimeOfDaySeed()
 #include "osusphere.cpp"
 #include "osucube.cpp"
 #include "osucylindercone.cpp"
-//#include "osutorus.cpp"
+#include "osutorus.cpp"
 //#include "bmptotexture.cpp"
 //#include "loadobjmtlfiles.cpp"
 //#include "keytime.cpp"
@@ -437,6 +442,7 @@ void Display()
 	glCallList(CubeList);
 	glCallList(CylinderList);
 	glCallList(ConeList);
+	glCallList(TorusList);
 
 	// draw some gratuitous text that just rotates on top of the scene:
 	// i commented out the actual text-drawing calls -- put them back in if you have a use for them
@@ -706,6 +712,11 @@ void InitLists()
 	ConeList = glGenLists(1);
 	glNewList(ConeList, GL_COMPILE);
 		OsuCone(CONE_RADIUS_BOTTOM, CONE_RADIUS_TOP, CONE_HEIGHT, CONE_SLICES, CONE_STACKS);
+	glEndList();
+
+	TorusList = glGenLists(1);
+	glNewList(TorusList, GL_COMPILE);
+		OsuTorus(TORUS_INNER_RADIUS, TORUS_OUTER_RADIUS, TORUS_NSIDES, TORUS_NRINGS);
 	glEndList();
 
 	// create the axes:

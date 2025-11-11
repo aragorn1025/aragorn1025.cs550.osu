@@ -157,31 +157,32 @@ const int MS_PER_CYCLE = 10000; // 10000 milliseconds = 10 seconds
 // object parameters:
 const int 		OBJECT_COUNT		= 6;
 const int		SPHERE_OBJECT_ID	= 0;
-const float		SPHERE_RADIUS		= 1.0f;
+const float		SPHERE_RADIUS		= 0.5f;
 const int		SPHERE_SLICES		= 50;
 const int		SPHERE_STACKS		= 50;
 const int 		CUBE_OBJECT_ID		= 1;
-const float		CUBE_SIDE			= 1.5f;
+const float		CUBE_SIDE			= 1.0f;
 const int		CYLINDER_OBJECT_ID	= 2;
 const float		CYLINDER_RADIUS		= 0.5f;
-const float		CYLINDER_HEIGHT		= 1.5f;
+const float		CYLINDER_HEIGHT		= 1.0f;
 const int		CYLINDER_SLICES		= 50;
 const int		CYLINDER_STACKS		= 50;
 const int		CONE_OBJECT_ID		= 3;
 const float		CONE_RADIUS_BOTTOM	= 0.5f;
 const float		CONE_RADIUS_TOP		= 0.0f;
-const float		CONE_HEIGHT			= 1.5f;
+const float		CONE_HEIGHT			= 1.0f;
 const int		CONE_SLICES			= 50;
 const int		CONE_STACKS			= 50;
 const int		TORUS_OBJECT_ID		= 4;
-const float		TORUS_INNER_RADIUS	= 0.3f;
-const float		TORUS_OUTER_RADIUS	= 0.7f;
-const int		TORUS_NSIDES		= 30;
-const int		TORUS_NRINGS		= 30;
+const float		TORUS_INNER_RADIUS	= 0.1f;
+const float		TORUS_OUTER_RADIUS	= 0.4f;
+const int		TORUS_NSIDES		= 50;
+const int		TORUS_NRINGS		= 50;
 const int		DOG_OBJECT_ID		= 5;
-const float		DOG_SCALE			= 1.5f;
+const float		DOG_SCALE			= 1.0f / 3.152f;
 const float		DOG_L				= 4.447f * DOG_SCALE;
 const float		DOG_W				= 1.184f * DOG_SCALE;
+const float		DOG_H				= 3.152f * DOG_SCALE;
 
 // non-constant global variables:
 int		ActiveButton;			// current button that is down
@@ -468,12 +469,14 @@ void Display()
 	if (IsObjectVisibles.test(CYLINDER_OBJECT_ID))
 	{
 		glPushMatrix();
+			glTranslatef(0.0f, -CYLINDER_HEIGHT * 0.5f, 0.0f);
 			glCallList(CylinderList);
 		glPopMatrix();
 	}
 	if (IsObjectVisibles.test(CONE_OBJECT_ID))
 	{
 		glPushMatrix();
+			glTranslatef(0.0f, -CONE_HEIGHT * 0.5f, 0.0f);
 			glCallList(ConeList);
 		glPopMatrix();
 	}
@@ -490,7 +493,7 @@ void Display()
 		glPushMatrix();
 			glRotatef(0.f, 0.f, 1.f, 0.f);
 			glScalef(DOG_SCALE, DOG_SCALE, DOG_SCALE);
-			glTranslatef(0.047f, -0.003f, 0.133f);
+			glTranslatef(0.047f, -1.579f, 0.132f);
 			glCallList(DogList);
 		glPopMatrix();
 	}

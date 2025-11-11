@@ -155,6 +155,7 @@ const int MS_PER_CYCLE = 10000; // 10000 milliseconds = 10 seconds
 const float		SPHERE_RADIUS		= 1.0f;
 const int		SPHERE_SLICES		= 50;
 const int		SPHERE_STACKS		= 50;
+const float		CUBE_SIDE			= 1.5f;
 
 // non-constant global variables:
 int		ActiveButton;			// current button that is down
@@ -174,6 +175,7 @@ int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
 bool	IsFreeze;				// animation freeze flag
 GLuint	SphereList;
+GLuint	CubeList;
 
 // function prototypes:
 void	Animate();
@@ -272,7 +274,7 @@ void TimeOfDaySeed()
 //#include "setmaterial.cpp"
 //#include "setlight.cpp"
 #include "osusphere.cpp"
-//#include "osucube.cpp"
+#include "osucube.cpp"
 //#include "osucylindercone.cpp"
 //#include "osutorus.cpp"
 //#include "bmptotexture.cpp"
@@ -421,6 +423,7 @@ void Display()
 
 	// draw the objects by calling up their display list:
 	glCallList(SphereList);
+	glCallList(CubeList);
 
 	// draw some gratuitous text that just rotates on top of the scene:
 	// i commented out the actual text-drawing calls -- put them back in if you have a use for them
@@ -675,6 +678,11 @@ void InitLists()
 	SphereList = glGenLists(1);
 	glNewList(SphereList, GL_COMPILE);
 		OsuSphere(SPHERE_RADIUS, SPHERE_SLICES, SPHERE_STACKS);
+	glEndList();
+
+	CubeList = glGenLists(1);
+	glNewList(CubeList, GL_COMPILE);
+		OsuCube(CUBE_SIDE);
 	glEndList();
 
 	// create the axes:

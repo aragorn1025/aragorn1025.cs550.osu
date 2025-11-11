@@ -169,6 +169,9 @@ const float		TORUS_INNER_RADIUS	= 0.3f;
 const float		TORUS_OUTER_RADIUS	= 0.7f;
 const int		TORUS_NSIDES		= 30;
 const int		TORUS_NRINGS		= 30;
+const float		DOG_SCALE			= 1.5f;
+const float		DOG_L				= 4.447f * DOG_SCALE;
+const float		DOG_W				= 1.184f * DOG_SCALE;
 
 // non-constant global variables:
 int		ActiveButton;			// current button that is down
@@ -192,6 +195,7 @@ GLuint	CubeList;
 GLuint	CylinderList;
 GLuint	ConeList;
 GLuint	TorusList;
+GLuint	DogList;
 
 // function prototypes:
 void	Animate();
@@ -293,8 +297,8 @@ void TimeOfDaySeed()
 #include "osucube.cpp"
 #include "osucylindercone.cpp"
 #include "osutorus.cpp"
-//#include "bmptotexture.cpp"
-//#include "loadobjmtlfiles.cpp"
+#include "bmptotexture.cpp"
+#include "loadobjmtlfiles.cpp"
 //#include "keytime.cpp"
 //#include "glslprogram.cpp"
 //#include "vertexbufferobject.cpp"
@@ -443,6 +447,15 @@ void Display()
 	glCallList(CylinderList);
 	glCallList(ConeList);
 	glCallList(TorusList);
+
+	// draw the dog object by calling up its display list:
+	glPushMatrix();
+		glRotatef(0.f, 0.f, 1.f, 0.f);
+		glScalef(DOG_SCALE, DOG_SCALE, DOG_SCALE);
+		glTranslatef(0.047f, -0.003f, 0.133f);
+		glShadeModel(GL_SMOOTH);
+		glCallList(DogList);
+	glPopMatrix();
 
 	// draw some gratuitous text that just rotates on top of the scene:
 	// i commented out the actual text-drawing calls -- put them back in if you have a use for them
@@ -718,6 +731,8 @@ void InitLists()
 	glNewList(TorusList, GL_COMPILE);
 		OsuTorus(TORUS_INNER_RADIUS, TORUS_OUTER_RADIUS, TORUS_NSIDES, TORUS_NRINGS);
 	glEndList();
+
+	DogList = LoadObjMtlFiles((char *)"objects/dog.obj");
 
 	// create the axes:
 	AxesList = glGenLists(1);

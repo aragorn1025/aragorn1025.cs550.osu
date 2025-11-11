@@ -46,7 +46,7 @@
 //	Author:			Joe Graphics
 
 // title of these windows:
-const char *WINDOWTITLE = "OpenGL / GLUT Sample -- Joe Graphics"; // TODO: change this title for each project
+const char *WINDOWTITLE = "OpenGL / GLUT Project #3 -- Tz-Jie Dai";
 const char *GLUITITLE   = "User Interface Window";
 
 // what the glui package defines as true and false:
@@ -91,6 +91,18 @@ enum ButtonVals
 {
 	RESET,
 	QUIT
+};
+
+// which light source types:
+enum LightSourceType {
+	POINT_LIGHT,
+	SPOT_LIGHT
+};
+
+// which spotl light directions:
+enum SpotLightDirections {
+	SPOTLIGHT_X_BACKWARD,
+	SPOTLIGHT_Z_BACKWARD
 };
 
 // window background color (rgba):
@@ -145,6 +157,41 @@ const float WHITE[] = {1., 1., 1., 1.};
 // for animation:
 const int MS_PER_CYCLE = 10000; // 10000 milliseconds = 10 seconds
 
+// wall parameters:
+const float		WALL_N				= (float)1000;						// how many points to draw a wall side
+const float		WALL_X0				= -0.2f;							// where one side starts
+const float		WALL_XN				= 33.f;								// where one side ends
+const float		WALL_DX				= (WALL_XN - WALL_X0) / WALL_N;		// change in x between the points
+const float		WALL_Y0				= -0.2f;							// where one side starts
+const float		WALL_YN				= 33.f;								// where one side starts
+const float		WALL_DY				= (WALL_YN - WALL_Y0) / WALL_N;		// change in y between the points
+const float		WALL_Z0				= -0.2f;							// where one side starts
+const float		WALL_ZN				= 33.f;								// where one side starts
+const float		WALL_DZ				= (WALL_ZN - WALL_Z0) / WALL_N;		// change in z between the points
+
+// object papameters:
+const float		AXES_LENGTH			= 35.f;
+const float		COMMON_CENTER_X		= (WALL_X0 + WALL_XN) / 2.f + 5.f;
+const float		COMMON_CENTER_Y		= 0.f;
+const float		COMMON_CENTER_Z		= (WALL_Z0 + WALL_ZN) / 2.f;
+const float		COMMON_GAP			= 5.f;
+const float		SUN_RADIUS			= 0.5f;
+const int		SUN_SLICES			= 30;
+const int		SUN_STACKS			= 30;
+const float		SUN_OBBIT_CENTER_X	= (WALL_X0 + WALL_XN) / 2.f;
+const float		SUN_OBBIT_CENTER_Y	= (WALL_Y0 * 7.f + WALL_YN * 1.f) / 8.f;
+const float		SUN_OBBIT_CENTER_Z	= (WALL_Z0 + WALL_ZN) / 2.f;
+const float		SUN_ORBIT_RADIUS	= 15.f;
+const float		CAT_SCALE			= 1.f;
+const float		CAT_L				= 6.087f * CAT_SCALE;
+const float		CAT_W				= 1.251f * CAT_SCALE;
+const float		COW_SCALE			= 1.f;
+const float		COW_L				= 10.444f * COW_SCALE;
+const float		COW_W				= 3.403f * COW_SCALE;
+const float		DOG_SCALE			= 1.5f;
+const float		DOG_L				= 4.447f * DOG_SCALE;
+const float		DOG_W				= 1.184f * DOG_SCALE;
+
 // what options should we compile-in?
 // in general, you don't need to worry about these
 // i compile these in to show class examples of things going wrong
@@ -162,13 +209,25 @@ int		DepthFightingOn;		// != 0 means to force the creation of z-fighting
 int		MainWindow;				// window id for main graphics window
 int		NowColor;				// index into Colors[ ]
 int		NowProjection;			// ORTHO or PERSP
+int		NowLightSourceType;		// POINT_LIGHT or SPOT_LIGHT
+int		NowSpotLightDirection;	// SPOTLIGHT_X_BACKWARD or SPOTLIGHT_Z_BACKWARD
 float	Scale;					// scaling factor
 int		ShadowsOn;				// != 0 means to turn shadows on
 float	Time;					// used for animation, this has a value between 0. and 1.
 int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
 bool	IsFreeze;				// animation freeze flag
-GLuint	MyList;					// TODO: add object display list here
+GLuint	SunList;
+float	SunColorR;
+float	SunColorG;
+float	SunColorB;
+float	SunPositionX;
+float	SunPositionY;
+float	SunPositionZ;
+GLuint	WallList;
+GLuint	CatList;
+GLuint	CowList;
+GLuint	DogList;
 
 // function prototypes:
 void	Animate();
@@ -264,14 +323,14 @@ void TimeOfDaySeed()
 }
 
 // these are here for when you need them -- just uncomment the ones you need:
-//#include "setmaterial.cpp"
-//#include "setlight.cpp"
-//#include "osusphere.cpp"
+#include "setmaterial.cpp"
+#include "setlight.cpp"
+#include "osusphere.cpp"
 //#include "osucube.cpp"
 //#include "osucylindercone.cpp"
 //#include "osutorus.cpp"
-//#include "bmptotexture.cpp"
-//#include "loadobjmtlfiles.cpp"
+#include "bmptotexture.cpp"
+#include "loadobjmtlfiles.cpp"
 //#include "keytime.cpp"
 //#include "glslprogram.cpp"
 //#include "vertexbufferobject.cpp"
@@ -322,6 +381,9 @@ void Animate()
 	Time = (float)ms / (float)MS_PER_CYCLE;		// makes the value of Time between 0. and slightly less than 1.
 
 	// for example, if you wanted to spin an object in Display( ), you might call: glRotatef( 360.f*Time,   0., 1., 0. );
+	SunPositionX = SUN_OBBIT_CENTER_X + SUN_ORBIT_RADIUS * sinf(Time * F_2_PI);
+	SunPositionY = SUN_OBBIT_CENTER_Y;
+	SunPositionZ = SUN_OBBIT_CENTER_Z + SUN_ORBIT_RADIUS * cosf(Time * F_2_PI);
 
 	// force a call to Display( ) next time it is convenient:
 
@@ -375,9 +437,9 @@ void Display()
 
 	// set the eye position, look-at position, and up-vector:
 	gluLookAt(
-		0.f, 0.f, 3.f, // eye position
-		0.f, 0.f, 0.f, // look-at position
-		0.f, 1.f, 0.f  // up-vector
+		48.f, 32.f, 48.f,	// eye position
+		0.f, 0.f, 0.f,		// look-at position
+		0.f, 1.f, 0.f		// up-vector
 	);
 
 	// rotate the scene:
@@ -414,8 +476,77 @@ void Display()
 	// since we are using glScalef( ), be sure the normals get unitized:
 	glEnable(GL_NORMALIZE);
 
-	// draw the box object by calling up its display list:
-	glCallList(MyList);
+	// set the light position:
+	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0f);
+	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.0f);
+	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.0f);
+	if (NowLightSourceType == POINT_LIGHT)
+	{
+		SetPointLight(GL_LIGHT0, SunPositionX, SunPositionY, SunPositionZ, SunColorR, SunColorG, SunColorB);
+	}
+	else
+	{
+		if (NowSpotLightDirection == SPOTLIGHT_X_BACKWARD)
+		{
+			SetSpotLight(GL_LIGHT0, SunPositionX, SunPositionY, SunPositionZ, -1.f, 0.f, 0.f, SunColorR, SunColorG, SunColorB);
+		}
+		else
+		{
+			SetSpotLight(GL_LIGHT0, SunPositionX, SunPositionY, SunPositionZ, 0.f, 0.f, -1.f, SunColorR, SunColorG, SunColorB);
+		}
+	}
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.1f, (float *)WHITE));
+	glPushMatrix();
+		glTranslatef(SunPositionX, SunPositionY, SunPositionZ);
+		glColor3f(SunColorR, SunColorG, SunColorB);
+		glCallList(SunList);
+	glPopMatrix();
+
+	// enable the light source:
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+		// draw the wall object by calling up its display list:
+		glPushMatrix();
+			glShadeModel(GL_SMOOTH);
+			glCallList(WallList);
+		glPopMatrix();
+
+		// draw the cat object by calling up its display list:
+		glPushMatrix();
+			SetMaterial(0.8f, 0.2f, 0.2f, 5.f);
+			glTranslatef(0.f, 0.f, (COMMON_GAP + CAT_L) / 2.f);
+			glTranslatef(COMMON_CENTER_X, 0.f, COMMON_CENTER_Z);
+			glRotatef(270.f, 0.f, 1.f, 0.f);
+			glScalef(CAT_SCALE, CAT_SCALE, CAT_SCALE);
+			glTranslatef(-0.815f, 0.002f, 0.f);
+			glShadeModel(GL_SMOOTH);
+			glCallList(CatList);
+		glPopMatrix();
+
+		// draw the cow object by calling up its display list:
+		glPushMatrix();
+			SetMaterial(0.2f, 0.8f, 0.2f, 50.f);
+			glTranslatef(-(COMMON_GAP + COW_L) / 2.f, 0.f, 0.f);
+			glTranslatef(COMMON_CENTER_X, 0.f, COMMON_CENTER_Z);
+			glRotatef(0.f, 0.f, 1.f, 0.f);
+			glScalef(COW_SCALE, COW_SCALE, COW_SCALE);
+			glTranslatef(-0.776f, 3.637f, 0.f);
+			glShadeModel(GL_SMOOTH);
+			glCallList(CowList);
+		glPopMatrix();
+
+		// draw the dog object by calling up its display list:
+		glPushMatrix();
+			SetMaterial(0.2f, 0.2f, 0.8f, 100.f);
+			glTranslatef(0.f, 0.f, -(COMMON_GAP + DOG_L) / 2.f);
+			glTranslatef(COMMON_CENTER_X, 0.f, COMMON_CENTER_Z);
+			glRotatef(0.f, 0.f, 1.f, 0.f);
+			glScalef(DOG_SCALE, DOG_SCALE, DOG_SCALE);
+			glTranslatef(0.047f, -0.003f, 0.133f);
+			glShadeModel(GL_SMOOTH);
+			glCallList(DogList);
+		glPopMatrix();
+	glDisable(GL_LIGHTING);
 
 	// draw some gratuitous text that just rotates on top of the scene:
 	// i commented out the actual text-drawing calls -- put them back in if you have a use for them
@@ -667,16 +798,67 @@ void InitLists()
 
 	glutSetWindow(MainWindow);
 
-	MyList = glGenLists(1);
-	glNewList(MyList, GL_COMPILE);
-		// TODO: do something here
+	// sun
+	SunList = glGenLists(1);
+	glNewList(SunList, GL_COMPILE);
+		OsuSphere(SUN_RADIUS, SUN_SLICES, SUN_STACKS);
 	glEndList();
+
+	WallList = glGenLists(1);
+	glNewList(WallList, GL_COMPILE);
+		// floor on X-Z plane
+		SetMaterial(0.8f, 0.6f, 0.6f, 30.f);
+		glNormal3f(0., 1., 0.);
+		for (float zi = WALL_Z0, zj = WALL_Z0 + WALL_DZ; zi <= WALL_ZN; zi += WALL_DZ, zj += WALL_DZ)
+		{
+			glBegin(GL_QUAD_STRIP);
+			for (float xi = WALL_X0; xi < WALL_XN; xi += WALL_DX)
+			{
+				glVertex3f(xi, WALL_Y0, zi);
+				glVertex3f(xi, WALL_Y0, zj);
+			}
+			glEnd();
+		}
+
+		// wall on Y-Z plane
+		SetMaterial(0.6f, 0.8f, 0.6f, 30.f);
+		glNormal3f(1., 0., 0.);
+		for (float zi = WALL_Z0, zj = WALL_Z0 + WALL_DZ; zi <= WALL_ZN; zi += WALL_DZ, zj += WALL_DZ)
+		{
+			glBegin(GL_QUAD_STRIP);
+			for (float yi = WALL_Y0; yi < WALL_YN; yi += WALL_DY)
+			{
+				glVertex3f(WALL_X0, yi, zi);
+				glVertex3f(WALL_X0, yi, zj);
+			}
+			glEnd();
+		}
+
+		// wall on X-Y plane
+		SetMaterial(0.6f, 0.6f, 0.8f, 30.f);
+		glNormal3f(0., 0., 1.);
+		for (float yi = WALL_Y0, yj = WALL_Y0 + WALL_DY; yi <= WALL_YN; yi += WALL_DY, yj += WALL_DY)
+		{
+			glBegin(GL_QUAD_STRIP);
+			for (float xi = WALL_X0; xi < WALL_XN; xi += WALL_DX)
+			{
+				glVertex3f(xi, yi, WALL_Z0);
+				glVertex3f(xi, yj, WALL_Z0);
+			}
+			glEnd();
+		}
+	glEndList();
+
+	// load the objects:
+	CatList = LoadObjMtlFiles((char *)"objects/cat.obj");
+	CowList = LoadObjMtlFiles((char *)"objects/cow.obj");
+	DogList = LoadObjMtlFiles((char *)"objects/dog.obj");
 
 	// create the axes:
 	AxesList = glGenLists(1);
 	glNewList(AxesList, GL_COMPILE);
 		glLineWidth(AXES_WIDTH);
-			Axes(1.5);
+			Axes(AXES_LENGTH);
 		glLineWidth(1.);
 	glEndList();
 }
@@ -759,14 +941,77 @@ void Keyboard(unsigned char c, int x, int y)
 				glutIdleFunc(Animate);
 			break;
 
-		case 'o':
-		case 'O':
-			NowProjection = ORTHO;
-			break;
-
 		case 'p':
 		case 'P':
-			NowProjection = PERSP;
+			NowLightSourceType = POINT_LIGHT;
+			break;
+
+		case 's':
+		case 'S':
+			if (NowLightSourceType != SPOT_LIGHT)
+			{
+				NowLightSourceType = SPOT_LIGHT;
+			}
+			else
+			{
+				NowSpotLightDirection = (NowSpotLightDirection == SPOTLIGHT_X_BACKWARD) ? SPOTLIGHT_Z_BACKWARD : SPOTLIGHT_X_BACKWARD;
+			}
+			break;
+
+		case 'w':
+		case 'W':
+			SunColorR = 1.f;
+			SunColorG = 1.f;
+			SunColorB = 1.f;
+			break;
+
+		case 'r':
+		case 'R':
+			SunColorR = 1.f;
+			SunColorG = 0.f;
+			SunColorB = 0.f;
+			break;
+
+		case 'g':
+		case 'G':
+			SunColorR = 0.f;
+			SunColorG = 1.f;
+			SunColorB = 0.f;
+			break;
+
+		case 'b':
+		case 'B':
+			SunColorR = 0.f;
+			SunColorG = 0.f;
+			SunColorB = 1.f;
+			break;
+
+		case 'y':
+		case 'Y':
+			SunColorR = 1.f;
+			SunColorG = 1.f;
+			SunColorB = 0.f;
+			break;
+
+		case 'm':
+		case 'M':
+			SunColorR = 1.f;
+			SunColorG = 0.f;
+			SunColorB = 1.f;
+			break;
+
+		case 'c':
+		case 'C':
+			SunColorR = 0.f;
+			SunColorG = 1.f;
+			SunColorB = 1.f;
+			break;
+
+		case 'o':
+		case 'O':
+			SunColorR = 1.f;
+			SunColorG = 0.5f;
+			SunColorB = 0.f;
 			break;
 
 		case 'q':
@@ -879,6 +1124,9 @@ void Reset()
 {
 	ActiveButton = 0;
 	AxesOn = 1;
+	SunColorR = 1.f;
+	SunColorG = 1.f;
+	SunColorB = 1.f;
 	DebugOn = 0;
 	DepthBufferOn = 1;
 	DepthFightingOn = 0;
@@ -887,6 +1135,8 @@ void Reset()
 	ShadowsOn = 0;
 	NowColor = YELLOW;
 	NowProjection = PERSP;
+	NowLightSourceType = POINT_LIGHT;
+	NowSpotLightDirection = SPOTLIGHT_X_BACKWARD;
 	Xrot = Yrot = 0.;
 	IsFreeze = false;
 }

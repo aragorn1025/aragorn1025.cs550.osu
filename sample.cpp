@@ -1,3 +1,4 @@
+#include <bitset>
 #include <stdio.h>
 #include <stdlib.h>
 #define _USE_MATH_DEFINES
@@ -26,6 +27,8 @@
 #endif
 
 #include "glut.h"
+
+using namespace std;
 
 //	This is a sample OpenGL / GLUT program
 //
@@ -152,23 +155,30 @@ const int MS_PER_CYCLE = 10000; // 10000 milliseconds = 10 seconds
 //#define DEMO_DEPTH_BUFFER
 
 // object parameters:
+const int 		OBJECT_COUNT		= 6;
+const int		SPHERE_OBJECT_ID	= 0;
 const float		SPHERE_RADIUS		= 1.0f;
 const int		SPHERE_SLICES		= 50;
 const int		SPHERE_STACKS		= 50;
+const int 		CUBE_OBJECT_ID		= 1;
 const float		CUBE_SIDE			= 1.5f;
+const int		CYLINDER_OBJECT_ID	= 2;
 const float		CYLINDER_RADIUS		= 0.5f;
 const float		CYLINDER_HEIGHT		= 1.5f;
 const int		CYLINDER_SLICES		= 50;
 const int		CYLINDER_STACKS		= 50;
+const int		CONE_OBJECT_ID		= 3;
 const float		CONE_RADIUS_BOTTOM	= 0.5f;
 const float		CONE_RADIUS_TOP		= 0.0f;
 const float		CONE_HEIGHT			= 1.5f;
 const int		CONE_SLICES			= 50;
 const int		CONE_STACKS			= 50;
+const int		TORUS_OBJECT_ID		= 4;
 const float		TORUS_INNER_RADIUS	= 0.3f;
 const float		TORUS_OUTER_RADIUS	= 0.7f;
 const int		TORUS_NSIDES		= 30;
 const int		TORUS_NRINGS		= 30;
+const int		DOG_OBJECT_ID		= 5;
 const float		DOG_SCALE			= 1.5f;
 const float		DOG_L				= 4.447f * DOG_SCALE;
 const float		DOG_W				= 1.184f * DOG_SCALE;
@@ -196,6 +206,7 @@ GLuint	CylinderList;
 GLuint	ConeList;
 GLuint	TorusList;
 GLuint	DogList;
+bitset<OBJECT_COUNT>	IsObjectVisibles;
 
 // function prototypes:
 void	Animate();
@@ -442,20 +453,47 @@ void Display()
 	glEnable(GL_NORMALIZE);
 
 	// draw the objects by calling up their display list:
-	glCallList(SphereList);
-	glCallList(CubeList);
-	glCallList(CylinderList);
-	glCallList(ConeList);
-	glCallList(TorusList);
+	if (IsObjectVisibles.test(SPHERE_OBJECT_ID))
+	{
+		glPushMatrix();
+			glCallList(SphereList);
+		glPopMatrix();
+	}
+	if (IsObjectVisibles.test(CUBE_OBJECT_ID))
+	{
+		glPushMatrix();
+			glCallList(CubeList);
+		glPopMatrix();
+	}
+	if (IsObjectVisibles.test(CYLINDER_OBJECT_ID))
+	{
+		glPushMatrix();
+			glCallList(CylinderList);
+		glPopMatrix();
+	}
+	if (IsObjectVisibles.test(CONE_OBJECT_ID))
+	{
+		glPushMatrix();
+			glCallList(ConeList);
+		glPopMatrix();
+	}
+	if (IsObjectVisibles.test(TORUS_OBJECT_ID))
+	{
+		glPushMatrix();
+			glCallList(TorusList);
+		glPopMatrix();
+	}
 
 	// draw the dog object by calling up its display list:
-	glPushMatrix();
-		glRotatef(0.f, 0.f, 1.f, 0.f);
-		glScalef(DOG_SCALE, DOG_SCALE, DOG_SCALE);
-		glTranslatef(0.047f, -0.003f, 0.133f);
-		glShadeModel(GL_SMOOTH);
-		glCallList(DogList);
-	glPopMatrix();
+	if (IsObjectVisibles.test(DOG_OBJECT_ID))
+	{
+		glPushMatrix();
+			glRotatef(0.f, 0.f, 1.f, 0.f);
+			glScalef(DOG_SCALE, DOG_SCALE, DOG_SCALE);
+			glTranslatef(0.047f, -0.003f, 0.133f);
+			glCallList(DogList);
+		glPopMatrix();
+	}
 
 	// draw some gratuitous text that just rotates on top of the scene:
 	// i commented out the actual text-drawing calls -- put them back in if you have a use for them
@@ -812,6 +850,16 @@ void Keyboard(unsigned char c, int x, int y)
 
 	switch (c)
 	{
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+			IsObjectVisibles.reset();
+			IsObjectVisibles.set(c - '0');
+			break;
+
 		case 'f':
 		case 'F':
 			IsFreeze = !IsFreeze;
@@ -951,6 +999,8 @@ void Reset()
 	NowProjection = PERSP;
 	Xrot = Yrot = 0.;
 	IsFreeze = false;
+	IsObjectVisibles.reset();
+	IsObjectVisibles.set(SPHERE_OBJECT_ID);
 }
 
 // called when user resizes the window:

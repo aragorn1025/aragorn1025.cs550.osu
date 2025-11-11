@@ -151,6 +151,11 @@ const int MS_PER_CYCLE = 10000; // 10000 milliseconds = 10 seconds
 //#define DEMO_Z_FIGHTING
 //#define DEMO_DEPTH_BUFFER
 
+// object parameters:
+const float		SPHERE_RADIUS		= 1.0f;
+const int		SPHERE_SLICES		= 50;
+const int		SPHERE_STACKS		= 50;
+
 // non-constant global variables:
 int		ActiveButton;			// current button that is down
 GLuint	AxesList;				// list to hold the axes
@@ -168,7 +173,7 @@ float	Time;					// used for animation, this has a value between 0. and 1.
 int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
 bool	IsFreeze;				// animation freeze flag
-GLuint	MyList;					// TODO: add object display list here
+GLuint	SphereList;
 
 // function prototypes:
 void	Animate();
@@ -266,7 +271,7 @@ void TimeOfDaySeed()
 // these are here for when you need them -- just uncomment the ones you need:
 //#include "setmaterial.cpp"
 //#include "setlight.cpp"
-//#include "osusphere.cpp"
+#include "osusphere.cpp"
 //#include "osucube.cpp"
 //#include "osucylindercone.cpp"
 //#include "osutorus.cpp"
@@ -414,8 +419,8 @@ void Display()
 	// since we are using glScalef( ), be sure the normals get unitized:
 	glEnable(GL_NORMALIZE);
 
-	// draw the box object by calling up its display list:
-	glCallList(MyList);
+	// draw the objects by calling up their display list:
+	glCallList(SphereList);
 
 	// draw some gratuitous text that just rotates on top of the scene:
 	// i commented out the actual text-drawing calls -- put them back in if you have a use for them
@@ -667,9 +672,9 @@ void InitLists()
 
 	glutSetWindow(MainWindow);
 
-	MyList = glGenLists(1);
-	glNewList(MyList, GL_COMPILE);
-		// TODO: do something here
+	SphereList = glGenLists(1);
+	glNewList(SphereList, GL_COMPILE);
+		OsuSphere(SPHERE_RADIUS, SPHERE_SLICES, SPHERE_STACKS);
 	glEndList();
 
 	// create the axes:

@@ -160,6 +160,11 @@ const float		CYLINDER_RADIUS		= 0.5f;
 const float		CYLINDER_HEIGHT		= 1.5f;
 const int		CYLINDER_SLICES		= 50;
 const int		CYLINDER_STACKS		= 50;
+const float		CONE_RADIUS_BOTTOM	= 0.5f;
+const float		CONE_RADIUS_TOP		= 0.0f;
+const float		CONE_HEIGHT			= 1.5f;
+const int		CONE_SLICES			= 50;
+const int		CONE_STACKS			= 50;
 
 // non-constant global variables:
 int		ActiveButton;			// current button that is down
@@ -181,6 +186,7 @@ bool	IsFreeze;				// animation freeze flag
 GLuint	SphereList;
 GLuint	CubeList;
 GLuint	CylinderList;
+GLuint	ConeList;
 
 // function prototypes:
 void	Animate();
@@ -430,6 +436,7 @@ void Display()
 	glCallList(SphereList);
 	glCallList(CubeList);
 	glCallList(CylinderList);
+	glCallList(ConeList);
 
 	// draw some gratuitous text that just rotates on top of the scene:
 	// i commented out the actual text-drawing calls -- put them back in if you have a use for them
@@ -694,6 +701,11 @@ void InitLists()
 	CylinderList = glGenLists(1);
 	glNewList(CylinderList, GL_COMPILE);
 		OsuCylinder(CYLINDER_RADIUS, CYLINDER_HEIGHT, CYLINDER_SLICES, CYLINDER_STACKS);
+	glEndList();
+
+	ConeList = glGenLists(1);
+	glNewList(ConeList, GL_COMPILE);
+		OsuCone(CONE_RADIUS_BOTTOM, CONE_RADIUS_TOP, CONE_HEIGHT, CONE_SLICES, CONE_STACKS);
 	glEndList();
 
 	// create the axes:

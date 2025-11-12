@@ -488,6 +488,7 @@ void Display()
 		if (IsObjectVisibles.test(SPHERE_OBJECT_ID))
 		{
 			glPushMatrix();
+				glShadeModel(GL_SMOOTH);
 				glCallList(SphereList);
 			glPopMatrix();
 		}
@@ -496,6 +497,7 @@ void Display()
 		if (IsObjectVisibles.test(CUBE_OBJECT_ID))
 		{
 			glPushMatrix();
+				glShadeModel(GL_SMOOTH);
 				glCallList(CubeList);
 			glPopMatrix();
 		}
@@ -504,6 +506,7 @@ void Display()
 		if (IsObjectVisibles.test(CYLINDER_OBJECT_ID))
 		{
 			glPushMatrix();
+				glShadeModel(GL_SMOOTH);
 				glTranslatef(0.0f, -CYLINDER_HEIGHT * 0.5f, 0.0f);
 				glCallList(CylinderList);
 			glPopMatrix();
@@ -513,6 +516,7 @@ void Display()
 		if (IsObjectVisibles.test(CONE_OBJECT_ID))
 		{
 			glPushMatrix();
+				glShadeModel(GL_SMOOTH);
 				glTranslatef(0.0f, -CONE_HEIGHT * 0.5f, 0.0f);
 				glCallList(ConeList);
 			glPopMatrix();
@@ -522,6 +526,7 @@ void Display()
 		if (IsObjectVisibles.test(TORUS_OBJECT_ID))
 		{
 			glPushMatrix();
+				glShadeModel(GL_SMOOTH);
 				glCallList(TorusList);
 			glPopMatrix();
 		}
@@ -530,6 +535,7 @@ void Display()
 		if (IsObjectVisibles.test(DOG_OBJECT_ID))
 		{
 			glPushMatrix();
+				glShadeModel(GL_SMOOTH);
 				glRotatef(0.f, 0.f, 1.f, 0.f);
 				glScalef(DOG_SCALE, DOG_SCALE, DOG_SCALE);
 				glTranslatef(0.047f, -1.579f, 0.132f);

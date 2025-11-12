@@ -220,6 +220,12 @@ GLuint	CylinderList;
 GLuint	ConeList;
 GLuint	TorusList;
 GLuint	DogList;
+GLuint	MercuryTexture;
+GLuint	VenusTexture;
+GLuint	EarthTexture;
+GLuint	MarsTexture;
+GLuint	JupiterTexture;
+GLuint	SaturnTexture;
 bitset<OBJECT_COUNT>	IsObjectVisibles;
 
 // function prototypes:
@@ -489,6 +495,8 @@ void Display()
 		{
 			glPushMatrix();
 				SetMaterial(0.8f, 0.2f, 0.2f, 100.f);
+				glBindTexture(GL_TEXTURE_2D, MercuryTexture);
+				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 				glShadeModel(GL_SMOOTH);
 				glCallList(SphereList);
 			glPopMatrix();
@@ -499,6 +507,8 @@ void Display()
 		{
 			glPushMatrix();
 				SetMaterial(0.8f, 0.8f, 0.2f, 100.f);
+				glBindTexture(GL_TEXTURE_2D, VenusTexture);
+				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 				glShadeModel(GL_SMOOTH);
 				glCallList(CubeList);
 			glPopMatrix();
@@ -509,6 +519,8 @@ void Display()
 		{
 			glPushMatrix();
 				SetMaterial(0.8f, 0.2f, 0.8f, 100.f);
+				glBindTexture(GL_TEXTURE_2D, EarthTexture);
+				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 				glShadeModel(GL_SMOOTH);
 				glTranslatef(0.0f, -CYLINDER_HEIGHT * 0.5f, 0.0f);
 				glCallList(CylinderList);
@@ -520,6 +532,8 @@ void Display()
 		{
 			glPushMatrix();
 				SetMaterial(0.2f, 0.8f, 0.2f, 100.f);
+				glBindTexture(GL_TEXTURE_2D, MarsTexture);
+				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 				glShadeModel(GL_SMOOTH);
 				glTranslatef(0.0f, -CONE_HEIGHT * 0.5f, 0.0f);
 				glCallList(ConeList);
@@ -531,6 +545,8 @@ void Display()
 		{
 			glPushMatrix();
 				SetMaterial(0.2f, 0.8f, 0.8f, 100.f);
+				glBindTexture(GL_TEXTURE_2D, JupiterTexture);
+				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 				glShadeModel(GL_SMOOTH);
 				glCallList(TorusList);
 			glPopMatrix();
@@ -541,6 +557,8 @@ void Display()
 		{
 			glPushMatrix();
 				SetMaterial(0.2f, 0.2f, 0.8f, 100.f);
+				glBindTexture(GL_TEXTURE_2D, SaturnTexture);
+				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 				glShadeModel(GL_SMOOTH);
 				glRotatef(0.f, 0.f, 1.f, 0.f);
 				glScalef(DOG_SCALE, DOG_SCALE, DOG_SCALE);
@@ -704,6 +722,29 @@ float ElapsedSeconds()
 	return (float)ms / 1000.f;
 }
 
+GLuint LoadTextureFile(char *filename)
+{
+	int width, height;
+	unsigned char *texture = BmpToTexture(filename, &width, &height);
+	if (texture == NULL)
+	{
+		fprintf(stderr, "Cannot open texture file '%s'\n", filename);
+		return 1;
+	}
+
+	fprintf(stderr, "Opened texture file '%s': width = %d, height = %d\n", filename, width, height);
+	GLuint Texture;
+	glGenTextures(1, &Texture);
+	glBindTexture(GL_TEXTURE_2D, Texture);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texture);
+	return Texture;
+}
+
 // initialize the glut and OpenGL libraries:
 //	also setup callback functions
 void InitGraphics()
@@ -786,7 +827,12 @@ void InitGraphics()
 #endif
 
 	// all other setups go here, such as GLSLProgram and KeyTime setups:
-	// TODO: do something here
+	MercuryTexture = LoadTextureFile((char *)"textures/mercury.bmp");
+	VenusTexture = LoadTextureFile((char *)"textures/venus.bmp");
+	EarthTexture = LoadTextureFile((char *)"textures/earth.bmp");
+	MarsTexture = LoadTextureFile((char *)"textures/mars.bmp");
+	JupiterTexture = LoadTextureFile((char *)"textures/jupiter.bmp");
+	SaturnTexture = LoadTextureFile((char *)"textures/saturn.bmp");
 }
 
 // initialize the display lists that will not change:

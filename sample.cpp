@@ -155,6 +155,15 @@ const int MS_PER_CYCLE = 10000; // 10000 milliseconds = 10 seconds
 //#define DEMO_DEPTH_BUFFER
 
 // object parameters:
+const float		SUN_RADIUS					= 0.1f;
+const int		SUN_SLICES					= 30;
+const int		SUN_STACKS					= 30;
+const float		SUN_ORBIT_RADIUS			= 15.0f;
+const float		SUN_ORBIT_CENTER_X			= 0.0f;
+const float		SUN_ORBIT_CENTER_Y			= 0.0f;
+const float		SUN_ORBIT_CENTER_Z			= 0.0f;
+const float		SUN_OSCILLATION_AMPLITUDE	= 5.0f;
+const float		SUN_OSCILLATION_COUNT		= 3.0f;
 const int 		OBJECT_COUNT		= 6;
 const int		SPHERE_OBJECT_ID	= 0;
 const float		SPHERE_RADIUS		= 0.5f;
@@ -201,6 +210,10 @@ float	Time;					// used for animation, this has a value between 0. and 1.
 int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
 bool	IsFreeze;				// animation freeze flag
+GLuint	SunList;
+float	SunPositionX;
+float	SunPositionY;
+float	SunPositionZ;
 GLuint	SphereList;
 GLuint	CubeList;
 GLuint	CylinderList;
@@ -304,7 +317,7 @@ void TimeOfDaySeed()
 
 // these are here for when you need them -- just uncomment the ones you need:
 //#include "setmaterial.cpp"
-//#include "setlight.cpp"
+#include "setlight.cpp"
 #include "osusphere.cpp"
 #include "osucube.cpp"
 #include "osucylindercone.cpp"
@@ -361,6 +374,9 @@ void Animate()
 	Time = (float)ms / (float)MS_PER_CYCLE;		// makes the value of Time between 0. and slightly less than 1.
 
 	// for example, if you wanted to spin an object in Display( ), you might call: glRotatef( 360.f*Time,   0., 1., 0. );
+	SunPositionX = SUN_ORBIT_CENTER_X + SUN_ORBIT_RADIUS * cosf(Time * F_2_PI);
+	SunPositionY = SUN_ORBIT_CENTER_Y + SUN_OSCILLATION_AMPLITUDE * sinf(SUN_OSCILLATION_COUNT * Time * F_2_PI);
+	SunPositionZ = SUN_ORBIT_CENTER_Z + SUN_ORBIT_RADIUS * sinf(Time * F_2_PI);
 
 	// force a call to Display( ) next time it is convenient:
 
@@ -453,50 +469,74 @@ void Display()
 	// since we are using glScalef( ), be sure the normals get unitized:
 	glEnable(GL_NORMALIZE);
 
-	// draw the objects by calling up their display list:
-	if (IsObjectVisibles.test(SPHERE_OBJECT_ID))
-	{
-		glPushMatrix();
-			glCallList(SphereList);
-		glPopMatrix();
-	}
-	if (IsObjectVisibles.test(CUBE_OBJECT_ID))
-	{
-		glPushMatrix();
-			glCallList(CubeList);
-		glPopMatrix();
-	}
-	if (IsObjectVisibles.test(CYLINDER_OBJECT_ID))
-	{
-		glPushMatrix();
-			glTranslatef(0.0f, -CYLINDER_HEIGHT * 0.5f, 0.0f);
-			glCallList(CylinderList);
-		glPopMatrix();
-	}
-	if (IsObjectVisibles.test(CONE_OBJECT_ID))
-	{
-		glPushMatrix();
-			glTranslatef(0.0f, -CONE_HEIGHT * 0.5f, 0.0f);
-			glCallList(ConeList);
-		glPopMatrix();
-	}
-	if (IsObjectVisibles.test(TORUS_OBJECT_ID))
-	{
-		glPushMatrix();
-			glCallList(TorusList);
-		glPopMatrix();
-	}
+	// set the light source:
+	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0f);
+	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 1.0f);
+	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 1.0f);
+	SetPointLight(GL_LIGHT0, SunPositionX, SunPositionY, SunPositionZ, 1., 1., 1.);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.1f, (float *)WHITE));
+	glPushMatrix();
+		glTranslatef(SunPositionX, SunPositionY, SunPositionZ);
+		glColor3f(1.f, 1.f, 1.f);
+		glCallList(SunList);
+	glPopMatrix();
 
-	// draw the dog object by calling up its display list:
-	if (IsObjectVisibles.test(DOG_OBJECT_ID))
-	{
-		glPushMatrix();
-			glRotatef(0.f, 0.f, 1.f, 0.f);
-			glScalef(DOG_SCALE, DOG_SCALE, DOG_SCALE);
-			glTranslatef(0.047f, -1.579f, 0.132f);
-			glCallList(DogList);
-		glPopMatrix();
-	}
+	// enable the light source:
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+		// draw the sphere:
+		if (IsObjectVisibles.test(SPHERE_OBJECT_ID))
+		{
+			glPushMatrix();
+				glCallList(SphereList);
+			glPopMatrix();
+		}
+
+		// draw the cube:
+		if (IsObjectVisibles.test(CUBE_OBJECT_ID))
+		{
+			glPushMatrix();
+				glCallList(CubeList);
+			glPopMatrix();
+		}
+
+		// draw the cylinder:
+		if (IsObjectVisibles.test(CYLINDER_OBJECT_ID))
+		{
+			glPushMatrix();
+				glTranslatef(0.0f, -CYLINDER_HEIGHT * 0.5f, 0.0f);
+				glCallList(CylinderList);
+			glPopMatrix();
+		}
+
+		// draw the cone:
+		if (IsObjectVisibles.test(CONE_OBJECT_ID))
+		{
+			glPushMatrix();
+				glTranslatef(0.0f, -CONE_HEIGHT * 0.5f, 0.0f);
+				glCallList(ConeList);
+			glPopMatrix();
+		}
+
+		// draw the torus:
+		if (IsObjectVisibles.test(TORUS_OBJECT_ID))
+		{
+			glPushMatrix();
+				glCallList(TorusList);
+			glPopMatrix();
+		}
+
+		// draw the dog object:
+		if (IsObjectVisibles.test(DOG_OBJECT_ID))
+		{
+			glPushMatrix();
+				glRotatef(0.f, 0.f, 1.f, 0.f);
+				glScalef(DOG_SCALE, DOG_SCALE, DOG_SCALE);
+				glTranslatef(0.047f, -1.579f, 0.132f);
+				glCallList(DogList);
+			glPopMatrix();
+		}
+	glDisable(GL_LIGHTING);
 
 	// draw some gratuitous text that just rotates on top of the scene:
 	// i commented out the actual text-drawing calls -- put them back in if you have a use for them
@@ -747,6 +787,12 @@ void InitLists()
 		fprintf(stderr, "Starting InitLists.\n");
 
 	glutSetWindow(MainWindow);
+
+	// sun
+	SunList = glGenLists(1);
+	glNewList(SunList, GL_COMPILE);
+		OsuSphere(SUN_RADIUS, SUN_SLICES, SUN_STACKS);
+	glEndList();
 
 	SphereList = glGenLists(1);
 	glNewList(SphereList, GL_COMPILE);

@@ -210,6 +210,7 @@ float	Time;					// used for animation, this has a value between 0. and 1.
 int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
 bool	IsFreeze;				// animation freeze flag
+bool	IsTextureMode;
 GLuint	SunList;
 float	SunPositionX;
 float	SunPositionY;
@@ -487,7 +488,11 @@ void Display()
 		glCallList(SunList);
 	glPopMatrix();
 
-	// enable the light source:
+	// enable the texture and the light source:
+	if (IsTextureMode)
+	{
+		glEnable(GL_TEXTURE_2D);
+	}
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 		// draw the sphere:
@@ -566,6 +571,10 @@ void Display()
 				glCallList(DogList);
 			glPopMatrix();
 		}
+	if (IsTextureMode)
+	{
+		glDisable(GL_TEXTURE_2D);
+	}
 	glDisable(GL_LIGHTING);
 
 	// draw some gratuitous text that just rotates on top of the scene:
@@ -992,6 +1001,11 @@ void Keyboard(unsigned char c, int x, int y)
 			DoMainMenu(QUIT);	// will not return here
 			break;				// happy compiler
 
+		case 't':
+		case 'T':
+			IsTextureMode = !IsTextureMode;
+			break;
+
 		default:
 			fprintf(stderr, "Don't know what to do with keyboard hit: '%c' (0x%0x)\n", c, c);
 	}
@@ -1106,6 +1120,7 @@ void Reset()
 	NowProjection = PERSP;
 	Xrot = Yrot = 0.;
 	IsFreeze = false;
+	IsTextureMode = true;
 	IsObjectVisibles.reset();
 	IsObjectVisibles.set(SPHERE_OBJECT_ID);
 }

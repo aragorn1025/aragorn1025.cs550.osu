@@ -503,7 +503,10 @@ void Display()
 		if (IsObjectVisibles.test(SPHERE_OBJECT_ID))
 		{
 			glPushMatrix();
-				SetMaterial(0.8f, 0.2f, 0.2f, 100.f);
+				if (IsTextureMode)
+					SetMaterial(1.0f, 1.0f, 1.0f, 100.f);
+				else
+					SetMaterial(0.8f, 0.2f, 0.2f, 100.f);
 				glBindTexture(GL_TEXTURE_2D, MercuryTexture);
 				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 				glShadeModel(GL_SMOOTH);
@@ -515,7 +518,10 @@ void Display()
 		if (IsObjectVisibles.test(CUBE_OBJECT_ID))
 		{
 			glPushMatrix();
-				SetMaterial(0.8f, 0.8f, 0.2f, 100.f);
+				if (IsTextureMode)
+					SetMaterial(1.0f, 1.0f, 1.0f, 100.f);
+				else
+					SetMaterial(0.8f, 0.8f, 0.2f, 100.f);
 				glBindTexture(GL_TEXTURE_2D, VenusTexture);
 				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 				glShadeModel(GL_SMOOTH);
@@ -527,7 +533,10 @@ void Display()
 		if (IsObjectVisibles.test(CYLINDER_OBJECT_ID))
 		{
 			glPushMatrix();
-				SetMaterial(0.8f, 0.2f, 0.8f, 100.f);
+				if (IsTextureMode)
+					SetMaterial(1.0f, 1.0f, 1.0f, 100.f);
+				else
+					SetMaterial(0.8f, 0.2f, 0.8f, 100.f);
 				glBindTexture(GL_TEXTURE_2D, EarthTexture);
 				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 				glShadeModel(GL_SMOOTH);
@@ -540,7 +549,10 @@ void Display()
 		if (IsObjectVisibles.test(CONE_OBJECT_ID))
 		{
 			glPushMatrix();
-				SetMaterial(0.2f, 0.8f, 0.2f, 100.f);
+				if (IsTextureMode)
+					SetMaterial(1.0f, 1.0f, 1.0f, 100.f);
+				else
+					SetMaterial(0.2f, 0.8f, 0.2f, 100.f);
 				glBindTexture(GL_TEXTURE_2D, MarsTexture);
 				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 				glShadeModel(GL_SMOOTH);
@@ -553,7 +565,10 @@ void Display()
 		if (IsObjectVisibles.test(TORUS_OBJECT_ID))
 		{
 			glPushMatrix();
-				SetMaterial(0.2f, 0.8f, 0.8f, 100.f);
+				if (IsTextureMode)
+					SetMaterial(1.0f, 1.0f, 1.0f, 100.f);
+				else
+					SetMaterial(0.2f, 0.8f, 0.8f, 100.f);
 				glBindTexture(GL_TEXTURE_2D, JupiterTexture);
 				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 				glShadeModel(GL_SMOOTH);
@@ -565,7 +580,10 @@ void Display()
 		if (IsObjectVisibles.test(DOG_OBJECT_ID))
 		{
 			glPushMatrix();
-				SetMaterial(0.2f, 0.2f, 0.8f, 100.f);
+				if (IsTextureMode)
+					SetMaterial(1.0f, 1.0f, 1.0f, 100.f);
+				else
+					SetMaterial(0.2f, 0.2f, 0.8f, 100.f);
 				glBindTexture(GL_TEXTURE_2D, SaturnTexture);
 				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 				glShadeModel(GL_SMOOTH);

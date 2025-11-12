@@ -493,6 +493,10 @@ void Display()
 	{
 		glEnable(GL_TEXTURE_2D);
 	}
+	else
+	{
+		glDisable(GL_TEXTURE_2D);
+	}
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 		// draw the sphere:

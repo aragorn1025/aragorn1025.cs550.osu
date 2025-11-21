@@ -1,3 +1,4 @@
+#include <bitset>
 #include <stdio.h>
 #include <stdlib.h>
 #define _USE_MATH_DEFINES
@@ -27,6 +28,8 @@
 
 #include "glut.h"
 
+using namespace std;
+
 //	This is a sample OpenGL / GLUT program
 //
 //	The objective is to draw a 3d object and change the color of the axes
@@ -46,7 +49,7 @@
 //	Author:			Joe Graphics
 
 // title of these windows:
-const char *WINDOWTITLE = "OpenGL / GLUT Sample -- Joe Graphics"; // TODO: change this title for each project
+const char *WINDOWTITLE = "OpenGL / GLUT Project #5 -- Tz-Jie Dai";
 const char *GLUITITLE   = "User Interface Window";
 
 // what the glui package defines as true and false:
@@ -151,6 +154,45 @@ const int MS_PER_CYCLE = 10000; // 10000 milliseconds = 10 seconds
 //#define DEMO_Z_FIGHTING
 //#define DEMO_DEPTH_BUFFER
 
+// object parameters:
+const float		SUN_RADIUS					= 0.1f;
+const int		SUN_SLICES					= 30;
+const int		SUN_STACKS					= 30;
+const float		SUN_ORBIT_RADIUS			= 15.0f;
+const float		SUN_ORBIT_CENTER_X			= 0.0f;
+const float		SUN_ORBIT_CENTER_Y			= 0.0f;
+const float		SUN_ORBIT_CENTER_Z			= 0.0f;
+const float		SUN_OSCILLATION_AMPLITUDE	= 5.0f;
+const float		SUN_OSCILLATION_COUNT		= 3.0f;
+const int 		OBJECT_COUNT		= 6;
+const int		SPHERE_OBJECT_ID	= 0;
+const float		SPHERE_RADIUS		= 0.5f;
+const int		SPHERE_SLICES		= 50;
+const int		SPHERE_STACKS		= 50;
+const int 		CUBE_OBJECT_ID		= 1;
+const float		CUBE_SIDE			= 1.0f;
+const int		CYLINDER_OBJECT_ID	= 2;
+const float		CYLINDER_RADIUS		= 0.5f;
+const float		CYLINDER_HEIGHT		= 1.0f;
+const int		CYLINDER_SLICES		= 50;
+const int		CYLINDER_STACKS		= 50;
+const int		CONE_OBJECT_ID		= 3;
+const float		CONE_RADIUS_BOTTOM	= 0.5f;
+const float		CONE_RADIUS_TOP		= 0.0f;
+const float		CONE_HEIGHT			= 1.0f;
+const int		CONE_SLICES			= 50;
+const int		CONE_STACKS			= 50;
+const int		TORUS_OBJECT_ID		= 4;
+const float		TORUS_INNER_RADIUS	= 0.2f;
+const float		TORUS_OUTER_RADIUS	= 0.3f;
+const int		TORUS_NSIDES		= 50;
+const int		TORUS_NRINGS		= 50;
+const int		DOG_OBJECT_ID		= 5;
+const float		DOG_SCALE			= 1.0f / 3.152f;
+const float		DOG_L				= 4.447f * DOG_SCALE;
+const float		DOG_W				= 1.184f * DOG_SCALE;
+const float		DOG_H				= 3.152f * DOG_SCALE;
+
 // non-constant global variables:
 int		ActiveButton;			// current button that is down
 GLuint	AxesList;				// list to hold the axes
@@ -168,7 +210,24 @@ float	Time;					// used for animation, this has a value between 0. and 1.
 int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
 bool	IsFreeze;				// animation freeze flag
-GLuint	MyList;					// TODO: add object display list here
+bool	IsTextureMode;
+GLuint	SunList;
+float	SunPositionX;
+float	SunPositionY;
+float	SunPositionZ;
+GLuint	SphereList;
+GLuint	CubeList;
+GLuint	CylinderList;
+GLuint	ConeList;
+GLuint	TorusList;
+GLuint	DogList;
+GLuint	MercuryTexture;
+GLuint	VenusTexture;
+GLuint	EarthTexture;
+GLuint	MarsTexture;
+GLuint	JupiterTexture;
+GLuint	SaturnTexture;
+bitset<OBJECT_COUNT>	IsObjectVisibles;
 
 // function prototypes:
 void	Animate();
@@ -264,14 +323,14 @@ void TimeOfDaySeed()
 }
 
 // these are here for when you need them -- just uncomment the ones you need:
-//#include "setmaterial.cpp"
-//#include "setlight.cpp"
-//#include "osusphere.cpp"
-//#include "osucube.cpp"
-//#include "osucylindercone.cpp"
-//#include "osutorus.cpp"
-//#include "bmptotexture.cpp"
-//#include "loadobjmtlfiles.cpp"
+#include "setmaterial.cpp"
+#include "setlight.cpp"
+#include "osusphere.cpp"
+#include "osucube.cpp"
+#include "osucylindercone.cpp"
+#include "osutorus.cpp"
+#include "bmptotexture.cpp"
+#include "loadobjmtlfiles.cpp"
 //#include "keytime.cpp"
 //#include "glslprogram.cpp"
 //#include "vertexbufferobject.cpp"
@@ -322,6 +381,9 @@ void Animate()
 	Time = (float)ms / (float)MS_PER_CYCLE;		// makes the value of Time between 0. and slightly less than 1.
 
 	// for example, if you wanted to spin an object in Display( ), you might call: glRotatef( 360.f*Time,   0., 1., 0. );
+	SunPositionX = SUN_ORBIT_CENTER_X + SUN_ORBIT_RADIUS * cosf(Time * F_2_PI);
+	SunPositionY = SUN_ORBIT_CENTER_Y + SUN_OSCILLATION_AMPLITUDE * sinf(SUN_OSCILLATION_COUNT * Time * F_2_PI);
+	SunPositionZ = SUN_ORBIT_CENTER_Z + SUN_ORBIT_RADIUS * sinf(Time * F_2_PI);
 
 	// force a call to Display( ) next time it is convenient:
 
@@ -414,8 +476,128 @@ void Display()
 	// since we are using glScalef( ), be sure the normals get unitized:
 	glEnable(GL_NORMALIZE);
 
-	// draw the box object by calling up its display list:
-	glCallList(MyList);
+	// set the light source:
+	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0f);
+	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 1.0f);
+	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 1.0f);
+	SetPointLight(GL_LIGHT0, SunPositionX, SunPositionY, SunPositionZ, 1., 1., 1.);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.1f, (float *)WHITE));
+	glPushMatrix();
+		glTranslatef(SunPositionX, SunPositionY, SunPositionZ);
+		glColor3f(1.f, 1.f, 1.f);
+		glCallList(SunList);
+	glPopMatrix();
+
+	// enable the texture and the light source:
+	if (IsTextureMode)
+	{
+		glEnable(GL_TEXTURE_2D);
+	}
+	else
+	{
+		glDisable(GL_TEXTURE_2D);
+	}
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+		// draw the sphere:
+		if (IsObjectVisibles.test(SPHERE_OBJECT_ID))
+		{
+			glPushMatrix();
+				if (IsTextureMode)
+					SetMaterial(1.0f, 1.0f, 1.0f, 100.f);
+				else
+					SetMaterial(0.8f, 0.2f, 0.2f, 100.f);
+				glBindTexture(GL_TEXTURE_2D, MercuryTexture);
+				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+				glShadeModel(GL_SMOOTH);
+				glCallList(SphereList);
+			glPopMatrix();
+		}
+
+		// draw the cube:
+		if (IsObjectVisibles.test(CUBE_OBJECT_ID))
+		{
+			glPushMatrix();
+				if (IsTextureMode)
+					SetMaterial(1.0f, 1.0f, 1.0f, 100.f);
+				else
+					SetMaterial(0.8f, 0.8f, 0.2f, 100.f);
+				glBindTexture(GL_TEXTURE_2D, VenusTexture);
+				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+				glShadeModel(GL_SMOOTH);
+				glCallList(CubeList);
+			glPopMatrix();
+		}
+
+		// draw the cylinder:
+		if (IsObjectVisibles.test(CYLINDER_OBJECT_ID))
+		{
+			glPushMatrix();
+				if (IsTextureMode)
+					SetMaterial(1.0f, 1.0f, 1.0f, 100.f);
+				else
+					SetMaterial(0.8f, 0.2f, 0.8f, 100.f);
+				glBindTexture(GL_TEXTURE_2D, EarthTexture);
+				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+				glShadeModel(GL_SMOOTH);
+				glTranslatef(0.0f, -CYLINDER_HEIGHT * 0.5f, 0.0f);
+				glCallList(CylinderList);
+			glPopMatrix();
+		}
+
+		// draw the cone:
+		if (IsObjectVisibles.test(CONE_OBJECT_ID))
+		{
+			glPushMatrix();
+				if (IsTextureMode)
+					SetMaterial(1.0f, 1.0f, 1.0f, 100.f);
+				else
+					SetMaterial(0.2f, 0.8f, 0.2f, 100.f);
+				glBindTexture(GL_TEXTURE_2D, MarsTexture);
+				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+				glShadeModel(GL_SMOOTH);
+				glTranslatef(0.0f, -CONE_HEIGHT * 0.5f, 0.0f);
+				glCallList(ConeList);
+			glPopMatrix();
+		}
+
+		// draw the torus:
+		if (IsObjectVisibles.test(TORUS_OBJECT_ID))
+		{
+			glPushMatrix();
+				if (IsTextureMode)
+					SetMaterial(1.0f, 1.0f, 1.0f, 100.f);
+				else
+					SetMaterial(0.2f, 0.8f, 0.8f, 100.f);
+				glBindTexture(GL_TEXTURE_2D, JupiterTexture);
+				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+				glShadeModel(GL_SMOOTH);
+				glCallList(TorusList);
+			glPopMatrix();
+		}
+
+		// draw the dog object:
+		if (IsObjectVisibles.test(DOG_OBJECT_ID))
+		{
+			glPushMatrix();
+				if (IsTextureMode)
+					SetMaterial(1.0f, 1.0f, 1.0f, 100.f);
+				else
+					SetMaterial(0.2f, 0.2f, 0.8f, 100.f);
+				glBindTexture(GL_TEXTURE_2D, SaturnTexture);
+				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+				glShadeModel(GL_SMOOTH);
+				glRotatef(0.f, 0.f, 1.f, 0.f);
+				glScalef(DOG_SCALE, DOG_SCALE, DOG_SCALE);
+				glTranslatef(0.047f, -1.579f, 0.132f);
+				glCallList(DogList);
+			glPopMatrix();
+		}
+	if (IsTextureMode)
+	{
+		glDisable(GL_TEXTURE_2D);
+	}
+	glDisable(GL_LIGHTING);
 
 	// draw some gratuitous text that just rotates on top of the scene:
 	// i commented out the actual text-drawing calls -- put them back in if you have a use for them
@@ -571,6 +753,29 @@ float ElapsedSeconds()
 	return (float)ms / 1000.f;
 }
 
+GLuint LoadTextureFile(char *filename)
+{
+	int width, height;
+	unsigned char *texture = BmpToTexture(filename, &width, &height);
+	if (texture == NULL)
+	{
+		fprintf(stderr, "Cannot open texture file '%s'\n", filename);
+		return 1;
+	}
+
+	fprintf(stderr, "Opened texture file '%s': width = %d, height = %d\n", filename, width, height);
+	GLuint Texture;
+	glGenTextures(1, &Texture);
+	glBindTexture(GL_TEXTURE_2D, Texture);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texture);
+	return Texture;
+}
+
 // initialize the glut and OpenGL libraries:
 //	also setup callback functions
 void InitGraphics()
@@ -653,7 +858,12 @@ void InitGraphics()
 #endif
 
 	// all other setups go here, such as GLSLProgram and KeyTime setups:
-	// TODO: do something here
+	MercuryTexture = LoadTextureFile((char *)"textures/mercury.bmp");
+	VenusTexture = LoadTextureFile((char *)"textures/venus.bmp");
+	EarthTexture = LoadTextureFile((char *)"textures/earth.bmp");
+	MarsTexture = LoadTextureFile((char *)"textures/mars.bmp");
+	JupiterTexture = LoadTextureFile((char *)"textures/jupiter.bmp");
+	SaturnTexture = LoadTextureFile((char *)"textures/saturn.bmp");
 }
 
 // initialize the display lists that will not change:
@@ -667,10 +877,38 @@ void InitLists()
 
 	glutSetWindow(MainWindow);
 
-	MyList = glGenLists(1);
-	glNewList(MyList, GL_COMPILE);
-		// TODO: do something here
+	// sun
+	SunList = glGenLists(1);
+	glNewList(SunList, GL_COMPILE);
+		OsuSphere(SUN_RADIUS, SUN_SLICES, SUN_STACKS);
 	glEndList();
+
+	SphereList = glGenLists(1);
+	glNewList(SphereList, GL_COMPILE);
+		OsuSphere(SPHERE_RADIUS, SPHERE_SLICES, SPHERE_STACKS);
+	glEndList();
+
+	CubeList = glGenLists(1);
+	glNewList(CubeList, GL_COMPILE);
+		OsuCube(CUBE_SIDE);
+	glEndList();
+
+	CylinderList = glGenLists(1);
+	glNewList(CylinderList, GL_COMPILE);
+		OsuCylinder(CYLINDER_RADIUS, CYLINDER_HEIGHT, CYLINDER_SLICES, CYLINDER_STACKS);
+	glEndList();
+
+	ConeList = glGenLists(1);
+	glNewList(ConeList, GL_COMPILE);
+		OsuCone(CONE_RADIUS_BOTTOM, CONE_RADIUS_TOP, CONE_HEIGHT, CONE_SLICES, CONE_STACKS);
+	glEndList();
+
+	TorusList = glGenLists(1);
+	glNewList(TorusList, GL_COMPILE);
+		OsuTorus(TORUS_INNER_RADIUS, TORUS_OUTER_RADIUS, TORUS_NSIDES, TORUS_NRINGS);
+	glEndList();
+
+	DogList = LoadObjMtlFiles((char *)"objects/dog.obj");
 
 	// create the axes:
 	AxesList = glGenLists(1);
@@ -750,6 +988,16 @@ void Keyboard(unsigned char c, int x, int y)
 
 	switch (c)
 	{
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+			IsObjectVisibles.reset();
+			IsObjectVisibles.set(c - '0');
+			break;
+
 		case 'f':
 		case 'F':
 			IsFreeze = !IsFreeze;
@@ -774,6 +1022,11 @@ void Keyboard(unsigned char c, int x, int y)
 		case ESCAPE:
 			DoMainMenu(QUIT);	// will not return here
 			break;				// happy compiler
+
+		case 't':
+		case 'T':
+			IsTextureMode = !IsTextureMode;
+			break;
 
 		default:
 			fprintf(stderr, "Don't know what to do with keyboard hit: '%c' (0x%0x)\n", c, c);
@@ -889,6 +1142,9 @@ void Reset()
 	NowProjection = PERSP;
 	Xrot = Yrot = 0.;
 	IsFreeze = false;
+	IsTextureMode = true;
+	IsObjectVisibles.reset();
+	IsObjectVisibles.set(SPHERE_OBJECT_ID);
 }
 
 // called when user resizes the window:

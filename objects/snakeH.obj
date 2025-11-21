@@ -1,6 +1,6 @@
 # Blender 4.3.0
 # www.blender.org
-mtllib snakeH.mtl
+#mtllib snakeH.mtl
 o RATTLER
 v 5.540784 0.630468 0.000000
 v 5.496153 0.619773 -0.135440

@@ -46,7 +46,7 @@
 //	Author:			Joe Graphics
 
 // title of these windows:
-const char *WINDOWTITLE = "OpenGL / GLUT Sample -- Joe Graphics"; // TODO: change this title for each project
+const char *WINDOWTITLE = "OpenGL / GLUT Project #1 -- Tz-Jie Dai";
 const char *GLUITITLE   = "User Interface Window";
 
 // what the glui package defines as true and false:
@@ -168,7 +168,7 @@ float	Time;					// used for animation, this has a value between 0. and 1.
 int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
 bool	IsFreeze;				// animation freeze flag
-GLuint	MyList;					// TODO: add object display list here
+GLuint	FootballList;
 
 // function prototypes:
 void	Animate();
@@ -414,8 +414,8 @@ void Display()
 	// since we are using glScalef( ), be sure the normals get unitized:
 	glEnable(GL_NORMALIZE);
 
-	// draw the box object by calling up its display list:
-	glCallList(MyList);
+	// draw the football object by calling up its display list:
+	glCallList(FootballList);
 
 	// draw some gratuitous text that just rotates on top of the scene:
 	// i commented out the actual text-drawing calls -- put them back in if you have a use for them
@@ -667,9 +667,65 @@ void InitLists()
 
 	glutSetWindow(MainWindow);
 
-	MyList = glGenLists(1);
-	glNewList(MyList, GL_COMPILE);
-		// TODO: do something here
+	// create the 3d football object:
+	FootballList = glGenLists(1);
+	glNewList(FootballList, GL_COMPILE);
+		// parameters of the 3d football to be drawn:
+		const float RX = 1.0f;	// radius in x direction
+		const float RY = 0.5f;	// radius in y direction
+		const float RZ = 0.5f;	// radius in z direction
+		const int STACKS = 15;	// number of stacks for the 3d football
+		const int SLICES = 15;	// number of slices for the 3d football
+
+		// temporary storage for the hsv to rgb conversion:
+		float hsv[3], rgb[3];
+		hsv[2] = 1.f; // HSV value. Just make it constant for simplicity.
+
+		for (int i = 0; i < STACKS; i++)
+		{
+			// get the angles for the current stack and the next stack, so we can draw a quad strip:
+			float theta1 = F_PI_2 - (float)i * F_PI / (float)STACKS;
+			float theta2 = F_PI_2 - (float)(i + 1) * F_PI / (float)STACKS;
+
+			// precompute the sine and cosine of these angles that will be used in the inner loop for efficiency:
+			float cosTheta1 = cosf(theta1);
+			float sinTheta1 = sinf(theta1);
+			float cosTheta2 = cosf(theta2);
+			float sinTheta2 = sinf(theta2);
+
+			hsv[1] = 0.1f + abs(cosTheta1) * 0.9f; // HSV saturation, based on the current stack angle but make it at least 0.1 to avoid pure white at the poles
+
+			glBegin(GL_QUAD_STRIP);
+				for (int j = 0; j <= SLICES; j++)
+				{
+					// get the angle for this slice:
+					float phi = (float)j * F_2_PI / (float)SLICES;
+
+					// precompute the sine and cosine of this angle for efficiency:
+					float cosPhi = cosf(phi);
+					float sinPhi = sinf(phi);
+
+					// get the coordinates of the vertex in the current stack:
+					float x1 = RX * cosTheta1 * cosPhi;
+					float y1 = RY * sinTheta1;
+					float z1 = RZ * cosTheta1 * sinPhi;
+
+					// get the coordinates of the vertex in the next stack:
+					float x2 = RX * cosTheta2 * cosPhi;
+					float y2 = RY * sinTheta2;
+					float z2 = RZ * cosTheta2 * sinPhi;
+
+					// set the color of the quad strip based on the position of the vertex:
+					hsv[0] = (float)j / (float)SLICES * 360.f; // HSV hue, based on the current slice angle
+					HsvRgb(hsv, rgb);
+					glColor3f(rgb[0], rgb[1], rgb[2]);
+
+					// set the vertex for the current slice, and this vertex is also used for the next slice:
+					glVertex3f(x1, y1, z1);
+					glVertex3f(x2, y2, z2);
+				}
+			glEnd();
+		}
 	glEndList();
 
 	// create the axes:

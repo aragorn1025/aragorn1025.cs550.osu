@@ -46,7 +46,7 @@
 //	Author:			Joe Graphics
 
 // title of these windows:
-const char *WINDOWTITLE = "OpenGL / GLUT Sample -- Joe Graphics"; // TODO: change this title for each project
+const char *WINDOWTITLE = "OpenGL / GLUT Project $4 -- Tz-Jie Dai";
 const char *GLUITITLE   = "User Interface Window";
 
 // what the glui package defines as true and false:
@@ -151,6 +151,21 @@ const int MS_PER_CYCLE = 10000; // 10000 milliseconds = 10 seconds
 //#define DEMO_Z_FIGHTING
 //#define DEMO_DEPTH_BUFFER
 
+// object parameters:
+const float		AXES_LENGTH			= 22.f;
+const float		SUN_RADIUS			= 0.5f;
+const int		SUN_SLICES			= 30;
+const int		SUN_STACKS			= 30;
+const float		SUN_POSITION_X		= 0.f;
+const float		SUN_POSITION_Y		= 12.f;
+const float		SUN_POSITION_Z		= 0.f;
+const float		CAT_SCALE			= 1.f;
+const float		CAT_L				= 6.087f * CAT_SCALE;
+const float		CAT_W				= 1.251f * CAT_SCALE;
+const float		DOG_SCALE			= 1.5f;
+const float		DOG_L				= 4.447f * DOG_SCALE;
+const float		DOG_W				= 1.184f * DOG_SCALE;
+
 // non-constant global variables:
 int		ActiveButton;			// current button that is down
 GLuint	AxesList;				// list to hold the axes
@@ -168,7 +183,9 @@ float	Time;					// used for animation, this has a value between 0. and 1.
 int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
 bool	IsFreeze;				// animation freeze flag
-GLuint	MyList;					// TODO: add object display list here
+GLuint	SunList;
+GLuint	CatList;
+GLuint	DogList;
 
 // function prototypes:
 void	Animate();
@@ -264,17 +281,31 @@ void TimeOfDaySeed()
 }
 
 // these are here for when you need them -- just uncomment the ones you need:
-//#include "setmaterial.cpp"
-//#include "setlight.cpp"
-//#include "osusphere.cpp"
+#include "setmaterial.cpp"
+#include "setlight.cpp"
+#include "osusphere.cpp"
 //#include "osucube.cpp"
 //#include "osucylindercone.cpp"
 //#include "osutorus.cpp"
-//#include "bmptotexture.cpp"
-//#include "loadobjmtlfiles.cpp"
-//#include "keytime.cpp"
+#include "bmptotexture.cpp"
+#include "loadobjmtlfiles.cpp"
+#include "keytime.cpp"
 //#include "glslprogram.cpp"
 //#include "vertexbufferobject.cpp"
+
+// keytime objects:
+Keytimes	EyePositionX;
+Keytimes	EyePositionY;
+Keytimes	EyePositionZ;
+Keytimes	EyeLookAtX;
+Keytimes	EyeLookAtY;
+Keytimes	EyeLookAtZ;
+Keytimes	CatPositionX;
+Keytimes	CatPositionZ;
+Keytimes	CatDirection;
+Keytimes	DogPositionX;
+Keytimes	DogPositionZ;
+Keytimes	DogDirection;
 
 // main program:
 int main(int argc, char *argv[])
@@ -348,6 +379,9 @@ void Display()
 		glDisable(GL_DEPTH_TEST);
 #endif
 
+	// get the time in seconds:
+	float seconds = (float)(glutGet(GLUT_ELAPSED_TIME) % MS_PER_CYCLE) / 1000.f;
+
 	// specify shading to be flat:
 	glShadeModel(GL_FLAT);
 
@@ -375,8 +409,8 @@ void Display()
 
 	// set the eye position, look-at position, and up-vector:
 	gluLookAt(
-		0.f, 0.f, 3.f, // eye position
-		0.f, 0.f, 0.f, // look-at position
+		EyePositionX.GetValue(seconds), EyePositionY.GetValue(seconds), EyePositionZ.GetValue(seconds),
+		EyeLookAtX.GetValue(seconds), EyeLookAtY.GetValue(seconds), EyeLookAtZ.GetValue(seconds),
 		0.f, 1.f, 0.f  // up-vector
 	);
 
@@ -414,8 +448,43 @@ void Display()
 	// since we are using glScalef( ), be sure the normals get unitized:
 	glEnable(GL_NORMALIZE);
 
-	// draw the box object by calling up its display list:
-	glCallList(MyList);
+	// set the light source:
+	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0f);
+	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 1.0f);
+	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 1.0f);
+	SetPointLight(GL_LIGHT0, SUN_POSITION_X, SUN_POSITION_Y, SUN_POSITION_Z, 1., 1., 1.);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.1f, (float *)WHITE));
+	glPushMatrix();
+		glTranslatef(SUN_POSITION_X, SUN_POSITION_Y, SUN_POSITION_Z);
+		glColor3f(1.f, 1.f, 1.f);
+		glCallList(SunList);
+	glPopMatrix();
+
+	// enable the light source:
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+		// draw the cat object by calling the display list:
+		glPushMatrix();
+			SetMaterial(0.8f, 0.2f, 0.2f, 5.f);
+			glTranslatef(CatPositionX.GetValue(seconds), 0.f, CatPositionZ.GetValue(seconds));
+			glRotatef(90.f + CatDirection.GetValue(seconds), 0.f, 1.f, 0.f);
+			glScalef(CAT_SCALE, CAT_SCALE, CAT_SCALE);
+			glTranslatef(-0.815f, 0.002f, 0.f);
+			glShadeModel(GL_SMOOTH);
+			glCallList(CatList);
+		glPopMatrix();
+
+		// draw the dog object by calling the display list:
+		glPushMatrix();
+			SetMaterial(0.2f, 0.2f, 0.8f, 100.f);
+			glTranslatef(DogPositionX.GetValue(seconds), 0.f, DogPositionZ.GetValue(seconds));
+			glRotatef(DogDirection.GetValue(seconds), 0.f, 1.f, 0.f);
+			glScalef(DOG_SCALE, DOG_SCALE, DOG_SCALE);
+			glTranslatef(0.047, -0.003f, 0.133f);
+			glShadeModel(GL_SMOOTH);
+			glCallList(DogList);
+		glPopMatrix();
+	glDisable(GL_LIGHTING);
 
 	// draw some gratuitous text that just rotates on top of the scene:
 	// i commented out the actual text-drawing calls -- put them back in if you have a use for them
@@ -653,7 +722,56 @@ void InitGraphics()
 #endif
 
 	// all other setups go here, such as GLSLProgram and KeyTime setups:
-	// TODO: do something here
+	int numberTimes = 9;
+	float times[] = {0.00f, 1.25f, 2.50f, 3.75f, 5.00f, 6.25f, 7.50f, 8.25f, 10.00f};
+
+	float catPositionX[] = {0, 10, 0, -10, 0, 10, 0, -10, 0};
+    float catPositionZ[] = {0, 10, 20, 10, 0, -10, -20, -10, 0};
+    float catDirection[]  = {45, 0, -90, -180, -225, -180, -90, 0, 45};
+	CatPositionX.Init();
+	CatPositionZ.Init();
+	CatDirection.Init();
+	for (int i = 0; i < numberTimes; ++i) {
+        CatPositionX.AddTimeValue(times[i], catPositionX[i]);
+        CatPositionZ.AddTimeValue(times[i], catPositionZ[i]);
+        CatDirection.AddTimeValue(times[i], catDirection[i]);
+    }
+
+	float dogPositionX[] = {-10, 0, 10, 0, -10, 0, 10, 0, -10};
+    float dogPositionZ[] = {-10, 0, 10, 20, 10, 0, -10, -20, -10};
+    float dogDirection[]  = {0, 45, 0, -90, -180, -225, -180, -90, 0};
+	DogPositionX.Init();
+	DogPositionZ.Init();
+	DogDirection.Init();
+	for (int i = 0; i < numberTimes; ++i) {
+		DogPositionX.AddTimeValue(times[i], dogPositionX[i]);
+		DogPositionZ.AddTimeValue(times[i], dogPositionZ[i]);
+		DogDirection.AddTimeValue(times[i], dogDirection[i]);
+	}
+
+	float eyePositionX[] = {0, 30, 0, -30, 0, 30, 0, -30, 0};
+	float eyePositionY[] = {10, 20, 30, 20, 10, 20, 30, 20, 10};
+	float eyePositionZ[] = {50, 30, 10, 30, 50, 30, 10, 30, 50};
+	EyePositionX.Init();
+	EyePositionY.Init();
+	EyePositionZ.Init();
+	for (int i = 0; i < numberTimes; ++i) {
+		EyePositionX.AddTimeValue(times[i], eyePositionX[i]);
+		EyePositionY.AddTimeValue(times[i], eyePositionY[i]);
+		EyePositionZ.AddTimeValue(times[i], eyePositionZ[i]);
+	}
+
+	float eyeLookAtX[] = {0, 5, 0, 5, 0, 5, 0, 5, 0};
+	float eyeLookAtY[] = {5, 0, 0, 0, 5, 0, 0, 0, 5};
+	float eyeLookAtZ[] = {0, 5, 0, 5, 0, 5, 0, 5, 0};
+	EyeLookAtX.Init();
+	EyeLookAtY.Init();
+	EyeLookAtZ.Init();
+	for (int i = 0; i < numberTimes; ++i) {
+		EyeLookAtX.AddTimeValue(times[i], eyeLookAtX[i]);
+		EyeLookAtY.AddTimeValue(times[i], eyeLookAtY[i]);
+		EyeLookAtZ.AddTimeValue(times[i], eyeLookAtZ[i]);
+	}
 }
 
 // initialize the display lists that will not change:
@@ -667,16 +785,21 @@ void InitLists()
 
 	glutSetWindow(MainWindow);
 
-	MyList = glGenLists(1);
-	glNewList(MyList, GL_COMPILE);
-		// TODO: do something here
+	// sun
+	SunList = glGenLists(1);
+	glNewList(SunList, GL_COMPILE);
+		OsuSphere(SUN_RADIUS, SUN_SLICES, SUN_STACKS);
 	glEndList();
+
+	// load the objects:
+	CatList = LoadObjMtlFiles((char *)"objects/cat.obj");
+	DogList = LoadObjMtlFiles((char *)"objects/dog.obj");
 
 	// create the axes:
 	AxesList = glGenLists(1);
 	glNewList(AxesList, GL_COMPILE);
 		glLineWidth(AXES_WIDTH);
-			Axes(1.5);
+			Axes(AXES_LENGTH);
 		glLineWidth(1.);
 	glEndList();
 }
